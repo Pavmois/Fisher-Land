@@ -47,18 +47,18 @@ h1 {
   place-items: center;
   position: relative;
   .back {
-    background-image: url('/src/assets/monitor.png');
+    background-image: url('/src/assets/monitor2.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
     width: 100%;
-    height: 700px;
+    height: 635px;
   }
   .video {
     position: absolute;
     left: 13%;
     top: 50%;
-    transform: translate(0, -70%);
+    transform: translate(0, -75%);
     width: 74%;
     height: auto;
   }
@@ -92,7 +92,7 @@ h1 {
   .stream {
     .video {
       left: 50%;
-      transform: translate(-50%, -70%);
+      transform: translate(-50%, -75%);
       width: 100%;
       height: 390px;
     }
@@ -114,6 +114,7 @@ h1 {
   .vid {
     margin: auto;
     width: auto;
+    margin-top: 50px;
   }
 }
 </style>

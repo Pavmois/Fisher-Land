@@ -32,7 +32,6 @@ onMounted(() => {
   position: relative;
   margin: auto;
   background: rgb(43, 45, 56);
-  border-bottom: 3px solid rgb(0, 252, 126);
 }
 
 .overlay {
@@ -41,7 +40,7 @@ onMounted(() => {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Чем меньше последнее число, тем меньше затемнение */
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 video {
