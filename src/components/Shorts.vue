@@ -1,16 +1,10 @@
 <template>
   <div class="monitor">
     <div class="desc">
-      Меня зовут Давид Фишер и я - стример
+      Так же есть нарезки стримов в Youtube Shorts.
     </div>
 
     <div class="vid">
-      <div class="stream">
-        <div class="back"></div>
-        <video class="video" autoplay muted playsinline loop>
-          <source src="/src/assets/1.mp4" type="video/mp4" />
-        </video>
-      </div>
       <div class="stream-mobile">
         <div class="back2"></div>
         <video class="video-mobile" autoplay muted playsinline loop>
@@ -35,38 +29,17 @@ h1 {
 .monitor {
   position: relative;
   display: flex;
+  flex-direction: row-reverse;
   justify-content: space-between;
-  margin-top: 50px;
 }
 .vid {
   position: relative;
-  width: 50%;
-}
-.stream {
   display: grid;
   place-items: center;
-  position: relative;
-  .back {
-    background-image: url('/src/assets/monitor2.png');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    width: 100%;
-    height: 635px;
-  }
-  .video {
-    position: absolute;
-    left: 13%;
-    top: 50%;
-    transform: translate(0, -75%);
-    width: 74%;
-    height: auto;
-  }
+  width: 50%;
 }
 .stream-mobile {
   position: relative;
-  display: grid;
-  place-items: center;
   height: 600px;
   width: 320px;
   overflow: hidden;
@@ -88,28 +61,11 @@ h1 {
   }
 
 }
-@media screen and (min-width: 1900px) {
-  .stream {
-    .video {
-      left: 50%;
-      transform: translate(-50%, -75%);
-      width: 100%;
-      height: 390px;
-    }
-  }
-}
-@media screen and (min-width: 1200px) {
-  .stream-mobile {
-    display: none;
-  }
-}
+
 
 @media screen and (max-width: 1200px) {
   .monitor {
     flex-direction: column;
-  }
-  .stream {
-    display: none;
   }
   .vid {
     margin: auto;

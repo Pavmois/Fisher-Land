@@ -50,7 +50,7 @@ video {
 h1 {
   position: absolute;
   left: 50%;
-  top: 10%;
+  top: 40%;
   transform: translate(-50%, -50%);
   z-index: 1;
   cursor: pointer;
