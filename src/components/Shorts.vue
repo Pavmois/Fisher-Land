@@ -1,12 +1,12 @@
 <template>
-  <div class="monitor">
-    <div class="desc">
+  <div class="mobile">
+    <div class="description">
       Так же есть нарезки стримов в Youtube Shorts.
     </div>
 
-    <div class="vid">
+    <div class="video-block">
       <div class="stream-mobile">
-        <div class="back2"></div>
+        <div class="back-border"></div>
         <video class="video-mobile" autoplay muted playsinline loop>
           <source src="/src/assets/shorts.mp4" type="video/mp4" />
         </video>
@@ -22,17 +22,17 @@
 h1 {
   margin-bottom: 50px;
 }
-.desc {
+.description {
   margin: auto;
   font-size: 2rem;
 }
-.monitor {
+.mobile {
   position: relative;
   display: flex;
   flex-direction: row-reverse;
   justify-content: space-between;
 }
-.vid {
+.video-block {
   position: relative;
   display: grid;
   place-items: center;
@@ -43,7 +43,7 @@ h1 {
   height: 600px;
   width: 320px;
   overflow: hidden;
-  .back2 {
+  .back-border {
     background-image: url('/src/assets/mobile.png');
     background-position: center;
     background-repeat: no-repeat;
@@ -64,10 +64,10 @@ h1 {
 
 
 @media screen and (max-width: 1200px) {
-  .monitor {
+  .mobile {
     flex-direction: column;
   }
-  .vid {
+  .video-block {
     margin: auto;
     width: auto;
     margin-top: 50px;

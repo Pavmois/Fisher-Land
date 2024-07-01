@@ -1,12 +1,12 @@
 <template>
-  <div class="monitor">
-    <div class="desc">
+  <div class="pc">
+    <div class="description">
       Меня зовут David Fisher и я - стример на платформе Twitch.<br/>
       Большую часть игр прохожу в тематическом косплее.
     </div>
-    <div class="vid">
+    <div class="video-block">
       <div class="stream">
-        <div class="back"></div>
+        <div class="back-border"></div>
         <video class="video" autoplay muted playsinline loop>
           <source src="/src/assets/1.mp4" type="video/mp4" />
         </video>
@@ -19,17 +19,17 @@
 h1 {
   margin-bottom: 50px;
 }
-.desc {
+.description {
   margin: auto;
   font-size: 2rem;
 }
-.monitor {
+.pc {
   position: relative;
   display: flex;
   justify-content: space-between;
   margin-top: 50px;
 }
-.vid {
+.video-block {
   position: relative;
   width: 50%;
 }
@@ -37,7 +37,7 @@ h1 {
   display: grid;
   place-items: center;
   position: relative;
-  .back {
+  .back-border {
     background-image: url('/src/assets/monitor2.png');
     background-position: center;
     background-repeat: no-repeat;
@@ -67,13 +67,66 @@ h1 {
 }
 
 @media screen and (max-width: 1200px) {
-  .monitor {
+  .pc {
     flex-direction: column;
   }
-  .vid {
+  .video-block {
     margin: auto;
     width: 80%;
     margin-top: 50px;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .stream {
+    .back-border {
+      height: 565px;
+    }
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .stream {
+    .back-border {
+      height: 475px;
+    }
+  }
+}
+@media screen and (max-width: 800px) {
+  .video-block {
+    width: 90%;
+  }
+  .stream {
+    .back-border {
+      height: 475px;
+    }
+  }
+}
+@media screen and (max-width: 600px) {
+  .stream {
+    .back-border {
+      height: 365px;
+    }
+  }
+}
+@media screen and (max-width: 500px) {
+  .video-block {
+    margin-top: 20px;
+  }
+  .stream {
+    .back-border {
+      height: 315px;
+    }
+  }
+  .description {
+    font-size: 1rem;
+  }
+}
+@media screen and (max-width: 425px) {
+  .stream {
+    .back-border {
+      height: 265px;
+    }
   }
 }
 </style>
