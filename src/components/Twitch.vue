@@ -1,8 +1,10 @@
 <template>
   <div class="pc">
     <div class="description">
-      Меня зовут David Fisher и я - стример на платформе Twitch.<br/>
-      Большую часть игр прохожу в тематическом косплее.
+        Меня зовут David Fisher и я - стример на платформе Twitch.<br/>
+        Большую часть игр прохожу в тематическом косплее,<br/>
+        изготовленном собственоручно. На данный момент <br/> число косплеев
+        превышет 60!
     </div>
     <div class="video-block">
       <div class="stream">
@@ -18,10 +20,6 @@
 <style lang="scss" scoped>
 h1 {
   margin-bottom: 50px;
-}
-.description {
-  margin: auto;
-  font-size: 2rem;
 }
 .pc {
   position: relative;
@@ -120,9 +118,6 @@ h1 {
     .back-border {
       height: 315px;
     }
-  }
-  .description {
-    font-size: 1rem;
   }
 }
 @media screen and (max-width: 425px) {

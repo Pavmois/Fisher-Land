@@ -1,7 +1,8 @@
 <template>
   <div class="mobile">
     <div class="description">
-      Так же есть нарезки стримов в Youtube Shorts.
+      Записи всех стримов я выкладываю на свой канал Youtube, <br/>
+      там же можно найти подборку Shorts с лучшими <br/> моментами стримов
     </div>
 
     <div class="video-block">
@@ -21,10 +22,6 @@
 <style lang="scss" scoped>
 h1 {
   margin-bottom: 50px;
-}
-.description {
-  margin: auto;
-  font-size: 2rem;
 }
 .mobile {
   position: relative;
@@ -81,12 +78,6 @@ h1 {
     margin: auto;
     width: auto;
     margin-top: 50px;
-  }
-}
-
-@media screen and (max-width: 500px) {
-  .description {
-    font-size: 1rem;
   }
 }
 </style>

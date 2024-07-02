@@ -1,9 +1,10 @@
 <template>
   <div class="boosty">
     <div class="description">
-      Каждый месяц провожу Boosty Day!<br/>
-      Любой подписчик Boosty может выбрать игру, на стриме крутим колесо
-      и 5 выпавших игр я играю по часу
+      В первый день каждого месяца я провожу ивент Boosty Day!<br/>
+      Любой подписчик Boosty может предложить игру, на стриме<br/>
+      крутим колесо удачи со списком всех игр и в 5 выпавших<br/>
+      я играю по часу, а если понравится, то прохожу полностью
     </div>
     <div class="video-block">
       <div class="stream">
@@ -19,12 +20,6 @@
 <style lang="scss" scoped>
 h1 {
   margin-bottom: 50px;
-}
-.description {
-  margin: auto;
-  font-size: 2rem;
-  max-width: 850px;
-  text-align: left;
 }
 .boosty {
   position: relative;
@@ -123,9 +118,6 @@ h1 {
     .back-border {
       height: 315px;
     }
-  }
-  .description {
-    font-size: 1rem;
   }
 }
 @media screen and (max-width: 425px) {
