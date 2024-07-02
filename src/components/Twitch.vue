@@ -8,7 +8,7 @@
       <div class="stream">
         <div class="back-border"></div>
         <video class="video" autoplay muted playsinline loop>
-          <source src="/src/assets/1.mp4" type="video/mp4" />
+          <source src="/src/assets/Oblivion.mp4" type="video/mp4" />
         </video>
       </div>
     </div>
@@ -38,7 +38,7 @@ h1 {
   place-items: center;
   position: relative;
   .back-border {
-    background-image: url('/src/assets/monitor2.png');
+    background-image: url('/src/assets/monitor.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;

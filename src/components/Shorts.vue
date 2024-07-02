@@ -40,16 +40,14 @@ h1 {
 }
 .stream-mobile {
   position: relative;
-  height: 600px;
-  width: 320px;
   overflow: hidden;
   .back-border {
     background-image: url('/src/assets/mobile.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    height: 100%;
-    width: 320px;
+    height: 590px;
+    width: 275px;
     z-index: 2;
   }
   .video-mobile {
@@ -57,9 +55,21 @@ h1 {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: 290px;
+    width: 260px;
   }
 
+}
+
+@media screen and (max-width: 1300px) {
+  .stream-mobile {
+    .back-border {
+      height: 475px;
+      width: 225px;
+    }
+    .video-mobile {
+      width: 210px;
+    }
+  }
 }
 
 
