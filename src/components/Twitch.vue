@@ -103,6 +103,9 @@ h1 {
   }
 }
 @media screen and (max-width: 600px) {
+  .video-block {
+    width: 100%;
+  }
   .stream {
     .back-border {
       height: 365px;

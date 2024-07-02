@@ -8,7 +8,7 @@
       <div class="stream-mobile">
         <div class="back-border"></div>
         <video class="video-mobile" autoplay muted playsinline loop>
-          <source src="/src/assets/shorts.mp4" type="video/mp4" />
+          <source src="/src/assets/shorts2.mp4" type="video/mp4" />
         </video>
       </div>
     </div>
@@ -81,6 +81,12 @@ h1 {
     margin: auto;
     width: auto;
     margin-top: 50px;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .description {
+    font-size: 1rem;
   }
 }
 </style>

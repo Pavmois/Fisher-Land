@@ -10,7 +10,7 @@
           <img src="/src/assets/yotube-icon.png">
         </a>
         <a href="https://boosty.to/davidfisher" target="_blank">
-          <img src="/src/assets/boosty-icon.png">
+          <img src="/src/assets/boosty-icon2.png" style="filter: invert(1);">
         </a>
         <a href="https://vk.com/davidfisherteam" target="_blank">
           <img src="/src/assets/vk-icon.png" style="filter: invert(1);">

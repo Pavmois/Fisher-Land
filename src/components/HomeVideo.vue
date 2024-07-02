@@ -1,7 +1,6 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <div class="overlay"></div>
     <video v-if="isDesktop" autoplay muted playsinline loop id="myVideo">
       <source src="/src/assets/desktop.mp4" type="video/mp4" />
     </video>
@@ -21,7 +20,7 @@ onMounted(() => {
     isDesktop.value = window.innerWidth >= 600;
   };
 
-  handleResize(); // Set initial value
+  handleResize();
 
   window.addEventListener("resize", handleResize);
 });
@@ -31,28 +30,19 @@ onMounted(() => {
 .hello {
   position: relative;
   margin: auto;
-  background: rgb(43, 45, 56);
-}
-
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
 }
 
 video {
   width: 100vw;
+  filter: brightness(0.5);
 }
 
 h1 {
   position: absolute;
   left: 50%;
-  top: 40%;
-  transform: translate(-50%, -50%);
+  top: 10%;
   z-index: 1;
-  cursor: pointer;
+  white-space: nowrap;
+  transform: translate(-50%, 0%);
 }
 </style>
