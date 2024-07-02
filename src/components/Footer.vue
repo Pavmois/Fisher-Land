@@ -3,17 +3,17 @@
     <div class="footer-wrapper">
       <div class="copyrights">DAVIDFISHER.RU<br/> © 2024 All rights reserve</div>
       <div class="links">
-        <a href="https://www.twitch.tv/davldflsher" target="_blank">
+        <a href="https://www.twitch.tv/davldflsher" style="filter: invert(1);" target="_blank">
           <img src="/src/assets/twitch-icon.png">
         </a>
         <a href="https://www.youtube.com/c/TheSimpleHugh" target="_blank">
           <img src="/src/assets/yotube-icon.png">
         </a>
-        <a href="https://vk.com/davidfisherteam" target="_blank">
-          <img src="/src/assets/vk-icon.png">
-        </a>
         <a href="https://boosty.to/davidfisher" target="_blank">
           <img src="/src/assets/boosty-icon.png">
+        </a>
+        <a href="https://vk.com/davidfisherteam" target="_blank">
+          <img src="/src/assets/vk-icon.png" style="filter: invert(1);">
         </a>
         <a href="https://t.me/DavidFisherPublic" target="_blank">
           <img src="/src/assets/tg-icon.png">
@@ -43,13 +43,10 @@
       display: flex;
       gap: 30px;
       a {
-        text-decoration: none;
-        color: aqua;
         img {
           width: 50px;
           height: 50px;
           border-radius: 50%;
-          opacity: 0.75;
         }
       }
     }
