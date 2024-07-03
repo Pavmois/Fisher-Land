@@ -1,5 +1,7 @@
 <template>
-  <h2>F.A.Q</h2>
+  <Divider>
+    <h2>F.A.Q</h2>
+  </Divider>
   <div class="accordeon-wrapper">
     <div
       class="question"
@@ -19,15 +21,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import Divider from './Divider.vue'
+import { ref } from "vue";
 import { Collapse } from "vue-collapsed";
-
-onMounted(() => {
-  const textToCopy = document.getElementById('textToCopy');
-  if (textToCopy) {
-    textToCopy.addEventListener('click', copyText);
-  }
-});
 
 const questions = ref([
   {

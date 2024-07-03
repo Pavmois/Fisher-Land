@@ -25,7 +25,7 @@ h1 {
   position: relative;
   display: flex;
   justify-content: space-between;
-  margin-top: 50px;
+  margin: 50px 0;
 }
 .video-block {
   position: relative;

@@ -26,7 +26,6 @@
 <style lang="scss" scoped>
   .footer {
     width: 100%;
-    margin-top: 50px;
     background-color: rgba(63, 65, 65, 0.5);
     border-top: 1px solid rgb(88, 88, 88);
     border-top-left-radius: 30px;

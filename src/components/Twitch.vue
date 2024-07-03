@@ -1,4 +1,7 @@
 <template>
+  <Divider>
+    <h2>Обо мне</h2>
+  </Divider>
   <div class="pc">
     <div class="description">
         Меня зовут David Fisher и я - стример на платформе Twitch.<br/>
@@ -17,15 +20,15 @@
   </div>
 </template>
 
+<script setup>
+import Divider from './Divider.vue'
+</script>
+
 <style lang="scss" scoped>
-h1 {
-  margin-bottom: 50px;
-}
 .pc {
   position: relative;
   display: flex;
   justify-content: space-between;
-  margin-top: 50px;
 }
 .video-block {
   position: relative;
