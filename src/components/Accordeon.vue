@@ -143,6 +143,7 @@ button {
 @media screen and (max-width: 500px) {
   .accordeon-wrapper {
     width: 85%;
+    margin-bottom: 20px;
   }
 }
 </style>
