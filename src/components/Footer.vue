@@ -68,6 +68,15 @@
         display: flex;
         justify-content: space-between;
         margin-bottom: 20px;
+        a {
+          img {
+            width: 40px;
+            height: 40px;
+          }
+        }
+      }
+      .copyrights {
+        font-size: 1rem;
       }
     }
   }
