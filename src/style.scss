@@ -1,6 +1,7 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  font-weight: 400;
+  
+  font-family: 'RobotoSerif-Regular';
+
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
@@ -60,6 +61,22 @@ h1 {
   padding: 0;
   margin: 0;
 }
+h2 {
+  font-family: 'RobotoSerif-Bold';
+  font-size: 2.5rem;
+  color: #ffffff;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+}
+h3 {
+  font-family: 'RobotoSerif-semiBold';
+  font-size: 1.5rem;
+  color: #ffffff;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+}
 
 .mobile,
 .boosty,
@@ -68,7 +85,6 @@ h1 {
 }
 
 .description {
-  font-family: 'RobotoSerif-Regular';
   margin: auto;
   font-size: 1.7rem;
   text-align: justify;
@@ -111,6 +127,9 @@ h1 {
 @media screen and (max-width: 600px) {
   h1 {
     font-size: 3rem;
+  }
+  h3 {
+    font-size: 1.1rem;
   }
   .mobile,
   .boosty,

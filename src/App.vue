@@ -3,6 +3,7 @@
   <Twitch/>
   <Shorts/>
   <Boosty/>
+  <Accordeon/>
   <Footer/>
 </template>
 
@@ -12,4 +13,5 @@ import Twitch from './components/Twitch.vue'
 import Shorts from './components/Shorts.vue'
 import Footer from './components/Footer.vue'
 import Boosty from './components/Boosty.vue'
+import Accordeon from './components/Accordeon.vue'
 </script>
