@@ -84,7 +84,8 @@ const pages = [
     box-shadow: 0 0 20px #000;
   }
 }
-@media (max-width: 600px) {
+
+@media (max-width: 800px) {
   .book-wrapper {
     width: 90%;
   }
