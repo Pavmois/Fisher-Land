@@ -5,14 +5,16 @@
   <Shorts/>
   <Boosty/>
   <Divider text="Образы"/>
-  <Gallery/>
-  <BookView/>
+  <Switcher @showBook="show"/>
+  <BookView v-if="isBook"/>
+  <Gallery v-else/>
   <Divider text="F.A.Q."/>
   <Accordeon/>
   <Footer/>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import Divider from './components/Divider.vue'
 import HomeVideo from './components/HomeVideo.vue'
 import Twitch from './components/Twitch.vue'
@@ -22,4 +24,10 @@ import Boosty from './components/Boosty.vue'
 import Accordeon from './components/Accordeon.vue'
 import BookView from './components/BookView.vue'
 import Gallery from './components/Gallery.vue'
+import Switcher from './components/Switcher.vue'
+
+const isBook = ref(false);
+const show = (data: boolean) => {
+  isBook.value = data;
+}
 </script>
