@@ -1,8 +1,5 @@
 <template>
   <div class="book-wrapper">
-    <Divider>
-      <h2>Образы</h2>
-    </Divider>
     <Flipbook
       class="flipbook"
       :zooms="[1]"
@@ -16,7 +13,6 @@
 </template>
 
 <script setup>
-import Divider from './Divider.vue'
 import Flipbook from "flipbook-vue";
 import img1 from "../assets/book/1.jpg";
 

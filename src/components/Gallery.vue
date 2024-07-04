@@ -5,6 +5,7 @@
       :grabCursor="true"
       :centeredSlides="true"
       :slidesPerView="'auto'"
+      
       :coverflowEffect="{
         rotate: 50,
         stretch: 0,
@@ -39,14 +40,13 @@
   .gallery-wrapper {
     position: relative;
     margin: auto;
-    .mySwiper {
-      height: 100%;
-    }
+
     .swiper-slide {
       background-position: center;
       background-size: cover;
       width: 400px;
       height: 400px;
+      padding: 10px 0;
       @media screen and (max-width: 600px) {
         width: 300px;
         height: 300px;
@@ -56,6 +56,8 @@
       display: block;
       width: 100%;
       user-select: none;
+      border: 2px solid rgb(88, 88, 88);
+      border-radius: 10%;
     }
   }
 </style>
