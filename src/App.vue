@@ -3,6 +3,7 @@
   <Twitch/>
   <Shorts/>
   <Boosty/>
+  <Gallery/>
   <BookView/>
   <Accordeon/>
   <Footer/>
@@ -16,4 +17,5 @@ import Footer from './components/Footer.vue'
 import Boosty from './components/Boosty.vue'
 import Accordeon from './components/Accordeon.vue'
 import BookView from './components/BookView.vue'
+import Gallery from './components/Gallery.vue'
 </script>

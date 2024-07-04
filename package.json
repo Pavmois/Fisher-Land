@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "flipbook-vue": "^1.0.0-beta.4",
+    "swiper": "^11.1.4",
     "vue": "^3.4.29",
     "vue-collapsed": "^1.3.3"
   },
