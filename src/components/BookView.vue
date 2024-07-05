@@ -14,7 +14,7 @@
 
 <script setup>
 import Flipbook from "flipbook-vue";
-import img1 from "../assets/book/1.jpg";
+import img1 from "../assets/book/1.png";
 
 import img2 from "../assets/book/2.jpg";
 import img3 from "../assets/book/3.jpg";
@@ -31,7 +31,7 @@ import img9 from "../assets/book/9.jpg";
 import img12 from "../assets/book/12.jpg";
 import img13 from "../assets/book/13.jpg";
 
-import img18 from "../assets/book/18.jpg";
+import img18 from "../assets/book/18.png";
 
 // Массив изображений для модуля Flipbook
 const pages = [
