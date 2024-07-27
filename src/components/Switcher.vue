@@ -1,6 +1,6 @@
 <template>
   <div class="switcher">
-    <button @click="bookOn" :class="{ active: activeBtn }">Книга</button>
+    <button @click="bookOn" :class="{ active: activeBtn }">Memories</button>
     <button @click="bookOff" :class="{ active: !activeBtn }">Галерея</button>
   </div>
 </template>
