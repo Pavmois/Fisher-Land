@@ -2,7 +2,9 @@
   <div class="book-wrapper">
     <Flipbook
       class="flipbook"
-      :zooms="[1]"
+      :zooms="[1, 2]"
+      :clickToZoom="true"
+      :wheel="zoom"
       :gloss="0.3"
       :pages="pages"
       v-slot="flipbook"
@@ -58,7 +60,7 @@ const pages = [
   margin-bottom: 50px;
 }
 .flipbook {
-  height: 700px;
+  height: 98dvh;
   position: relative;
   z-index: 1;
   margin: 0px auto;
