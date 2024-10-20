@@ -2,11 +2,19 @@
   <div class="wheel_wrapper">
     <h1>Wheel Of Boosty</h1>
 
-     <!-- Инпут для загрузки CSV файла -->
-    <input type="file" accept=".csv" @change="handleFileChange" />
-    
-    <!-- Инпут для загрузки JSON файла -->
-    <input type="file" accept=".json" @change="handleJsonFileChange" />
+    <div class="input_loaders">
+      <!-- Инпут для загрузки CSV файла -->
+      <label>
+        Выберите CSV файл
+        <input type="file" accept=".csv" @change="handleFileChange" />
+      </label>
+      
+      <!-- Инпут для загрузки JSON файла -->
+      <label>
+        Выберите JSON файл
+        <input type="file" accept=".json" @change="handleJsonFileChange" />
+      </label>
+    </div>
 
     <!-- Кнопка для сравнения данных -->
     <button class="compare_btn" v-if="parsedData && parsedData.length > 0 && jsonData" @click="compareData">
@@ -123,9 +131,26 @@ const compareData = () => {
     margin-top: 16px;
   }
 
-  input[type="file"] {
+  .input_loaders {
+    display: flex;
+    justify-content: space-between;
     margin: 32px auto;
+
+    label {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid rgb(88, 88, 88);
+      margin-right: 16px;
+    }
+
+    input[type="file"] {
+      font-size: 18px;
+      &:hover {
+        cursor: pointer;
+      }
+    }
   }
+
 
   .compare_btn {
     margin: auto;
@@ -157,26 +182,26 @@ const compareData = () => {
     .wheel-item {
       display: flex;
       align-items: center;
-      width: 250px; /* Два столбца с учетом отступа */
+      width: 250px;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
       background-color: #3f4d45;
 
       .avatar {
-        width: 50px; /* Ширина изображения */
-        height: 50px; /* Высота изображения */
-        border-radius: 50%; /* Круглая форма */
-        margin-right: 10px; /* Отступ справа */
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 10px;
       }
 
       .item-details {
         display: flex;
-        flex-direction: column; /* Вертикальное расположение текстовых блоков */
+        flex-direction: column;
       }
 
       span {
-        margin-right: 10px; /* Отступ между текстовыми блоками */
+        margin-right: 10px;
       }
     }
   }
