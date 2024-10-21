@@ -4,21 +4,25 @@
 
     <div class="input_loaders">
       <!-- Инпут для загрузки CSV файла -->
-      <label>
-        Выберите CSV файл
+      <label :class="parsedData ? 'active' : 'inactive'">
+        <span v-if="!parsedData">
+          Выберите CSV файл
+        </span>
         <input type="file" accept=".csv" @change="handleFileChange" />
       </label>
       
       <!-- Инпут для загрузки JSON файла -->
-      <label>
-        Выберите JSON файл
+      <label  :class="jsonData ? 'active' : 'inactive'">
+        <span v-if="!jsonData">
+          Выберите JSON файл
+        </span>
         <input type="file" accept=".json" @change="handleJsonFileChange" />
       </label>
     </div>
 
     <!-- Кнопка для сравнения данных -->
     <button class="compare_btn" v-if="parsedData && parsedData.length > 0 && jsonData" @click="compareData">
-      Соединить файлы
+      Получить таблицу участников
     </button>
 
     <!-- Блок для отображения результата сравнения в виде списка -->
@@ -136,7 +140,24 @@ const compareData = () => {
     justify-content: space-between;
     margin: 32px auto;
 
+    span {
+      color: white;
+    }
+
+    .inactive {
+      border: 1px solid red;
+      color: red;
+    }
+
+    .active {
+      border: 1px solid green;
+      color: green;
+    }
+
     label {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       padding: 8px 16px;
       border-radius: 20px;
       border: 1px solid rgb(88, 88, 88);
@@ -145,17 +166,43 @@ const compareData = () => {
 
     input[type="file"] {
       font-size: 18px;
+      margin: auto;
       &:hover {
         cursor: pointer;
       }
     }
-  }
 
+    @media screen and (max-width: 800px) {
+      flex-direction: column;
+      gap: 8px;
+    }
+    @media screen and (max-width: 430px) {
+      label {
+        margin: auto;
+        input[type="file"] {
+          font-size: 14px;
+        }
+      }
+    }
+  }
 
   .compare_btn {
     margin: auto;
+    margin-top: 0;
     font-size: 22px;
     width: 250px;
+    outline: none;
+    background: rgb(46, 46, 46);
+    border: 1px solid rgb(88, 88, 88);
+    height: 100%;
+    border-radius: 20px;
+    color: white;
+    padding: 4px 0;
+    cursor: pointer;
+    transition: all 0.35s linear;
+    &:hover {
+      background: transparent;
+    }
   }
 
   .json-output {
