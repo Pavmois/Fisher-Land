@@ -41,22 +41,24 @@
       </div>
     </div>
 
+    <WheelFortune v-if="wheelData" :sectors="wheelData"/>
+
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref } from 'vue';
 import Papa from 'papaparse';
+import WheelFortune from '../components/WheelFortune.vue';
 
-// Определяем типы для данных
-interface ParsedDataItem {
-  email: string;
+type ParsedDataItem = {
+  name: string;
   level_name: string;
   start_date: string;
-  name: string; // Добавляем поле name, если оно есть
+  [key: string]: any; // Позволяем любые другие ключи
 }
 
-interface JsonDataItem {
+type JsonDataItem = {
   author: string;
   [key: string]: any; // Позволяем любые другие ключи
 }
@@ -64,6 +66,7 @@ interface JsonDataItem {
 const parsedData = ref<any[] | null>(null); // Для хранения данных из CSV файла
 const jsonData = ref<any | null>(null); // Для хранения данных из JSON файла
 const wheelData = ref<any[]>([]); // Для хранения результата сравнения
+
 
 const handleFileChange = (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
@@ -76,12 +79,10 @@ const handleFileChange = (event: Event) => {
           header: true,
           dynamicTyping: true,
           complete: (results) => {
-            // Фильтруем данные, исключая объекты с type равным 'following' и оставляя только те, у которых end_date равен '-'
             parsedData.value = results.data.filter((item: any) => 
               item.type !== 'following' && item.end_date === '-'
             );
             console.log(parsedData.value);
-            
           },
         });
       }
@@ -115,13 +116,14 @@ const compareData = () => {
           const newItem = {
             ...jsonItem, // Все ключи из jsonItem
             level_name: parsedItem.level_name, // Ключ level_name из parsedData
-            start_date: parsedItem.start_date // Ключ start_date из parsedData
+            start_date: parsedItem.start_date, // Ключ start_date из parsedData
           };
           wheelData.value.push(newItem); // Добавляем новый объект в wheelData
         }
       });
     });
   }
+  console.log(wheelData.value);
 };
 </script>
 
