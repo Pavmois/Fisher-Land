@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <WheelFortune v-if="wheelData" :sectors="wheelData"/>
+    <WheelFortune v-if="wheelData" :sectors="wheelData" :winningSectorId="2"/>
 
   </div>
 </template>
@@ -82,7 +82,6 @@ const handleFileChange = (event: Event) => {
             parsedData.value = results.data.filter((item: any) => 
               item.type !== 'following' && item.end_date === '-'
             );
-            console.log(parsedData.value);
           },
         });
       }
@@ -108,12 +107,14 @@ const handleJsonFileChange = (event: Event) => {
 // Функция для сравнения данных
 const compareData = () => {
   wheelData.value = []; // Сбрасываем предыдущие данные
+  let idCounter = 0; // Инициализируем счетчик для id
   if (parsedData.value && jsonData.value) {
     parsedData.value.forEach((parsedItem: ParsedDataItem) => {
       jsonData.value.forEach((jsonItem: JsonDataItem) => {
         if (jsonItem.author === parsedItem.name) {
           // Создаем новый объект с нужными ключами
           const newItem = {
+            id: idCounter++, // Добавляем id с текущим значением счетчика и увеличиваем его
             ...jsonItem, // Все ключи из jsonItem
             level_name: parsedItem.level_name, // Ключ level_name из parsedData
             start_date: parsedItem.start_date, // Ключ start_date из parsedData

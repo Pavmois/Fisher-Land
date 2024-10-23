@@ -1,31 +1,34 @@
 <template>
-  <div>Текущий сектор: {{ currentSectorName }}</div>
-  <button @click="startRotation">Крутите барабан!</button>
-  <svg :width="size" :height="size" viewBox="-1 -1 2 2" :style="{ transform: `rotate(${rotationAngle}rad)` }">
-    <g v-for="(sector, index) in sectors" :key="index">
-      <path :d="getSectorPath(index)" :fill="`hsl(${(index / sectors.length) * 360}, 55%, 40%)`" />
-      <image 
-        :href="sector.avatar"
-        :alt="sector.author"
-        :x="getImageX(index)" 
-        :y="getImageY(index)" 
-        width="10%" 
-        height="10%" 
-        transform="translate(-0.1, -0.1)"
-      />
-      <text 
-        :x="getTextX(index)" 
-        :y="getTextY(index)" 
-        text-anchor="middle" 
-        alignment-baseline="middle" 
-        fill="white"
-        font-size="0.04"
-        :transform="`rotate(${getRotationAngle(index + 0.5)}, ${getTextX(index)}, ${getTextY(index)})`"
-      >
-      {{ truncateText(sector.suggestion) }}
-      </text>
-    </g>
-  </svg>
+  <div class="wheel-wrapper">
+    <button @click="getCurrentSector()">Что сверху?</button>
+    <button @click="spinWheel()">Вращать колесо</button>
+    <svg viewBox="-1 -1 2 2" :style="{ transform: `rotate(${rotationAngle}rad)`, transition: 'transform 4s ease-out' }">
+      <g v-for="(sector, index) in sectors" :key="sector.id">
+        <path :d="getSectorPath(sector.id)" :fill="`hsl(${(index / sectors.length) * 360}, 55%, 40%)`" />
+        <image 
+          :href="sector.avatar"
+          :alt="sector.author"
+          :x="getImageX(sector.id)" 
+          :y="getImageY(sector.id)" 
+          width="10%" 
+          height="10%" 
+          transform="translate(-0.1, -0.1)"
+        />
+        <text 
+          :x="getTextX(sector.id)" 
+          :y="getTextY(sector.id)" 
+          text-anchor="middle" 
+          alignment-baseline="middle" 
+          fill="white"
+          font-size="0.04"
+          :transform="`rotate(${getRotationAngle(index + 0.5)}, ${getTextX(index)}, ${getTextY(index)})`"
+        >
+        {{ index }} {{ truncateText(sector.suggestion) }} {{ sector.id }}
+        </text>
+      </g>
+    </svg>
+    <div class="david-look">WINNER!</div>
+  </div>
 </template>
 
 <script setup>
@@ -36,11 +39,13 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  size: {
+  winningSectorId: {
     type: Number,
-    default: 800
+    required: true
   }
 });
+
+const rotationAngle = ref(0); // Добавляем реактивную переменную для угла вращения
 
 // Функция для обрезки текста с добавлением многоточия
 const truncateText = (text) => {
@@ -51,48 +56,52 @@ const truncateText = (text) => {
   return text; // Возвращаем оригинальный текст, если он меньше или равен максимальной длине
 };
 
-const rotationAngle = ref(0); // Переменная для хранения угла вращения
-const currentSectorName = ref(''); // Переменная для хранения названия текущего сектора
-
-const startRotation = () => {
-  const duration = 3000; // мс
-  const interval = 5; // Обновление каждые 10 мс
-  const totalSteps = duration / interval;
-  let currentStep = 0;
-
-  const decelerationStartStep = totalSteps - 1800; // Начало замедления за 50 шагов до остановки
-  const rotationInterval = setInterval(() => {
-    let rotationSpeed = 5; // Начальная скорость вращения
-
-    // Уменьшаем скорость вращения при приближении к остановке
-    if (currentStep >= decelerationStartStep) {
-      const decelerationFactor = (totalSteps - currentStep) / 1800; // Уменьшаем скорость
-      rotationSpeed *= decelerationFactor; // Применяем фактор замедления
-    }
-
-    rotationAngle.value += (Math.PI / 180) * rotationSpeed; // Увеличиваем угол вращения
-    currentStep++;
-
-    // Обновляем название текущего сектора
-    updateCurrentSector();
-
-    if (currentStep >= totalSteps) {
-      clearInterval(rotationInterval); // Останавливаем вращение через 10 секунд
-      logWheelStopped();
-    }
-  }, interval);
-};
-
-const logWheelStopped = () => {
-  console.log("Колесо стоп");
-};
-
-const updateCurrentSector = () => {
+const spinWheel = () => {
   const totalSectors = props.sectors.length;
-  const anglePerSector = (2 * Math.PI) / totalSectors;
-  const currentAngle = rotationAngle.value % (2 * Math.PI);
-  const index = Math.floor((currentAngle + (Math.PI / 2)) / anglePerSector) % totalSectors; // +π/2 для корректного определения верхнего сектора
-  currentSectorName.value = props.sectors[index].suggestion; // Обновляем название текущего сектора
+  const angle = (2 * Math.PI) / totalSectors;
+  const winningSectorIndex = props.sectors.findIndex(sector => sector.id === props.winningSectorId);
+  
+  // Рассчитываем угол для остановки на выигрышном секторе
+  const winningAngle = winningSectorIndex * angle;
+
+  // Генерируем случайный угол вращения
+  const randomRotation = Math.random() * 2 * Math.PI; // Случайный угол вращения
+  const additionalRotations = 5 * 2 * Math.PI; // Дополнительные полные обороты
+
+  // Устанавливаем новый угол вращения
+  rotationAngle.value += randomRotation + additionalRotations + winningAngle; 
+
+  // Останавливаем вращение через 3 секунды
+  setTimeout(() => {
+    getCurrentSector();
+  }, 3000);
+};
+
+const getCurrentSector = () => {
+  const totalSectors = props.sectors.length;
+  const angle = (2 * Math.PI) / totalSectors;
+
+  // Находим угол, который соответствует верхней части колеса
+  const normalizedAngle = (rotationAngle.value % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+  
+  // Рассчитываем индекс сектора, который находится наверху
+  const sectorIndex = Math.floor((normalizedAngle) / angle);
+  
+  // Находим индекс выигрышного сектора
+  const winningSectorIndex = props.sectors.findIndex(sector => sector.id === props.winningSectorId);
+  
+  // Рассчитываем угол для докручивания к выигрышному сектору
+  const winningAngle = winningSectorIndex * angle;
+  
+  // Вычисляем угол, который нужно добавить, чтобы выигрышный сектор оказался вверху
+  const additionalAngle = (winningAngle - normalizedAngle + 2 * Math.PI) % (2 * Math.PI);
+  
+  // Обновляем угол вращения
+  rotationAngle.value += additionalAngle;
+
+  // Выводим сектор, который располагается на rotationAngle.value
+  const currentSectorIndex = Math.floor((rotationAngle.value % (2 * Math.PI)) / angle);
+  console.log('Текущий сектор:', props.sectors[currentSectorIndex]);
 };
 
 
@@ -147,14 +156,47 @@ const getRotationAngle = (index) => {
   }
   return angle; // Возвращаем угол
 };
-
-
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.wheel-wrapper {
+  position: relative;
+  width: 800px;
+  margin: auto;
+  .david-look {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 200px;
+    height: 230px;
+    text-align: left;
+    z-index: 1;
+    background-image: url("/src/assets/arrow-david.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    border-radius: 20px;
+    letter-spacing: 2px;
+    font-size: 20px;
+    animation: swing 2s ease-in-out infinite;
+  }
+}
+// Определяем ключевые кадры для анимации
+@keyframes swing {
+  0% {
+    transform: translate(90%, -50%) rotate(-2deg);
+  }
+  50% {
+    transform: translate(90%, -50%) rotate(2deg); // Поворачиваем в другую сторону
+  }
+  100% {
+    transform: translate(90%, -50%) rotate(-2deg);
+  }
+}
 svg {
   display: block;
   margin: auto;
+  border-radius: 50%;
 }
 button {
   width: 250px;
