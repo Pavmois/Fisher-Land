@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <WheelFortune v-if="wheelData" :sectors="wheelData" :winningSectorId="2"/>
+    <WheelFortune v-if="wheelData.length" :sectors="wheelData" :winningSectorId="2"/>
 
   </div>
 </template>

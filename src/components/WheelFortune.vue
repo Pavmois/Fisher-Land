@@ -56,7 +56,7 @@ const truncateText = (text) => {
   return text; // Возвращаем оригинальный текст, если он меньше или равен максимальной длине
 };
 
-const spinWheel = () => {
+const spinWheel = (duration = 3000) => {
   const totalSectors = props.sectors.length;
   const angle = (2 * Math.PI) / totalSectors;
   const winningSectorIndex = props.sectors.findIndex(sector => sector.id === props.winningSectorId);
@@ -71,7 +71,7 @@ const spinWheel = () => {
   // Устанавливаем новый угол вращения
   rotationAngle.value += randomRotation + additionalRotations + winningAngle; 
 
-  // Останавливаем вращение через 3 секунды
+  // Останавливаем вращение через заданное время
   setTimeout(() => {
     getCurrentSector();
   }, 3000);
