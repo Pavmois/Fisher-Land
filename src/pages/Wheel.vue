@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <WheelFortune v-if="wheelData.length" :sectors="wheelData" :winningSectorId="2"/>
+    <WheelFortune v-if="wheelData.length" :key="wheelData.length" :sectors="wheelData" @wheelStop="wheelStoped"/>
 
   </div>
 </template>
@@ -66,6 +66,7 @@ type JsonDataItem = {
 const parsedData = ref<any[] | null>(null); // Для хранения данных из CSV файла
 const jsonData = ref<any | null>(null); // Для хранения данных из JSON файла
 const wheelData = ref<any[]>([]); // Для хранения результата сравнения
+const wheelDataUpdate = ref<any[]>([]); // Для хранения результата сравнения
 
 
 const handleFileChange = (event: Event) => {
@@ -126,6 +127,21 @@ const compareData = () => {
   }
   console.log(wheelData.value);
 };
+
+const wheelStoped = (data: number) => {
+  console.log(data);
+  
+  // if (wheelData) {
+  //   const exists = wheelData.value.some(item => item.id === data);
+  //   if (exists) {
+  //     wheelDataUpdate.value = wheelData.value.filter(item => item.id !== data);
+  //     wheelData.value.splice(0, wheelData.value.length);
+  //     wheelData.value = wheelDataUpdate.value;
+  //   } else {
+  //     console.log('Объект с id', data, 'не найден.');
+  //   }
+  // }
+}
 </script>
 
 <style lang="scss" scoped>
