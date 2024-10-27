@@ -33,7 +33,7 @@
           <img :src="item.avatar" alt="Avatar" class="avatar" />
           <div class="item-details">
             <span class="author">{{ item.author }}</span>
-            <span class="level-name">{{ item.level_name }}</span>
+            <span class="level-name">Тир: {{ item.level_name }}</span>
             <span class="start-date">{{ item.start_date }}</span>
             <span class="suggestion">{{ item.suggestion }}</span>
           </div>
@@ -49,7 +49,7 @@
           <img :src="item.avatar" alt="Avatar" class="avatar" />
           <div class="item-details">
             <span class="author">{{ item.author }}</span>
-            <span class="level-name">{{ item.level_name }}</span>
+            <span class="level-name">Тир: {{ item.level_name }}</span>
             <span class="start-date">{{ item.start_date }}</span>
             <span class="suggestion">{{ item.suggestion }}</span>
           </div>
@@ -122,6 +122,11 @@ const handleJsonFileChange = (event: Event) => {
   }
 };
 
+const extractNumber = (str: string) => {
+  const match = str.match(/\d+/); // Ищем первое числовое значение в строке
+  return match ? parseInt(match[0], 10) : null; // Возвращаем число или null, если число не найдено
+};
+
 // Функция для сравнения данных
 const compareData = () => {
   wheelData.value = []; // Сбрасываем предыдущие данные
@@ -134,7 +139,7 @@ const compareData = () => {
           const newItem = {
             id: idCounter++, // Добавляем id с текущим значением счетчика и увеличиваем его
             ...jsonItem, // Все ключи из jsonItem
-            level_name: parsedItem.level_name, // Ключ level_name из parsedData
+            level_name: extractNumber(parsedItem.level_name), // Ключ level_name из parsedData
             start_date: parsedItem.start_date, // Ключ start_date из parsedData
           };
           wheelData.value.push(newItem); // Добавляем новый объект в wheelData
