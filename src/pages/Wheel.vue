@@ -27,9 +27,25 @@
 
     <!-- Блок для отображения результата сравнения в виде списка -->
     <div v-if="wheelData.length > 0" class="wheel-output">
-      <h2>Wheel Data</h2>
+      <h2>Участники</h2>
       <div class="wheel-list">
         <div v-for="(item, index) in wheelData" :key="index" class="wheel-item">
+          <img :src="item.avatar" alt="Avatar" class="avatar" />
+          <div class="item-details">
+            <span class="author">{{ item.author }}</span>
+            <span class="level-name">{{ item.level_name }}</span>
+            <span class="start-date">{{ item.start_date }}</span>
+            <span class="suggestion">{{ item.suggestion }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Блок для отображения результата сравнения в виде списка -->
+    <div v-if="winners.length" class="wheel-output">
+      <h2>Победители</h2>
+      <div class="wheel-list">
+        <div v-for="(item, index) in winners" :key="index" class="wheel-item">
           <img :src="item.avatar" alt="Avatar" class="avatar" />
           <div class="item-details">
             <span class="author">{{ item.author }}</span>
@@ -49,6 +65,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import Papa from 'papaparse';
+//@ts-ignore
 import WheelFortune from '../components/WheelFortune.vue';
 
 type ParsedDataItem = {
@@ -66,7 +83,7 @@ type JsonDataItem = {
 const parsedData = ref<any[] | null>(null); // Для хранения данных из CSV файла
 const jsonData = ref<any | null>(null); // Для хранения данных из JSON файла
 const wheelData = ref<any[]>([]); // Для хранения результата сравнения
-const wheelDataUpdate = ref<any[]>([]); // Для хранения результата сравнения
+const winners = ref<any[]>([]); // Для хранения результата сравнения
 
 
 const handleFileChange = (event: Event) => {
@@ -125,22 +142,33 @@ const compareData = () => {
       });
     });
   }
-  console.log(wheelData.value);
+  console.log(1111, wheelData.value);
+  
 };
 
-const wheelStoped = (data: number) => {
-  console.log(data);
+const wheelStoped = (index: number) => {
+  console.log(index);
+
+  setTimeout(() => {
+    // Удаляем объект по индексу
+    if (index >= 0 && index < wheelData.value.length) {
+      // Получаем объект по индексу
+      const winner = wheelData.value[index];
   
-  // if (wheelData) {
-  //   const exists = wheelData.value.some(item => item.id === data);
-  //   if (exists) {
-  //     wheelDataUpdate.value = wheelData.value.filter(item => item.id !== data);
-  //     wheelData.value.splice(0, wheelData.value.length);
-  //     wheelData.value = wheelDataUpdate.value;
-  //   } else {
-  //     console.log('Объект с id', data, 'не найден.');
-  //   }
-  // }
+      // Добавляем объект в массив winners
+      winners.value.push(winner);
+  
+      // Удаляем объект по индексу
+      wheelData.value.splice(index, 1);
+    
+    // Пересобираем массив, выставляя новые id по порядку
+    wheelData.value = wheelData.value.map((item, newIndex) => ({
+      ...item,
+      id: newIndex // Присваиваем новые id по порядку, начиная с 0
+    }));
+    }
+  }, 2000);
+
 }
 </script>
 

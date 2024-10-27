@@ -1,8 +1,7 @@
 <template>
   <div class="wheel-wrapper">
-    <button @click="deleteSector()">Что сверху?</button>
     <button @click="spinWheel()">Вращать колесо</button>
-    <div class="wheel-svg" :style="{ transform: `rotate(${rotationAngle}rad)`, transition: 'transform 5s ease-out' }">
+    <div class="wheel-svg" :style="{ transform: `rotate(${rotationAngle}rad)`, transition: 'transform 1s ease-out' }">
       <svg viewBox="-1 -1 2 2">
         <g v-for="(sector, index) in sectors" :key="sector.id">
           <path
@@ -49,12 +48,6 @@ const props = defineProps({
   }
 });
 
-const deleteSector = () => {
-  if (props.sectors.length > 1) {
-    props.sectors.splice(1, 1); // Удаляем сектор с индексом 1
-  }
-};
-
 const rotationAngle = ref(0); // Добавляем реактивную переменную для угла вращения
 
 const spinWheel = () => {
@@ -67,7 +60,7 @@ const spinWheel = () => {
   const lineCenter = getLineCenter();
   const imagesCoords = getImagesCoords();
   findNearestImage(lineCenter, imagesCoords);
-}, 5000); // Задержка 5 секунд, чтобы совпадало с длительностью вращения
+}, 1000); // Задержка 5 секунд, чтобы совпадало с длительностью вращения
 };
 
 const getLineCenter = () => {
@@ -111,7 +104,6 @@ const findNearestImage = (lineCenter, imagesCoords) => {
   emit('wheelStop', Number(nearestImage.index));
   return nearestImage;
 };
-
 
 // Функция для обрезки текста с добавлением многоточия
 const truncateText = (text) => {
