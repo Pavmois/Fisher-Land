@@ -80,6 +80,33 @@ type JsonDataItem = {
   [key: string]: any; // Позволяем любые другие ключи
 }
 
+const subTiers = [
+  {
+    name: 'Ведьхряк',
+    tier: 1,
+  },
+  {
+    name: 'Ассасвин',
+    tier: 2,
+  },
+  {
+    name: 'Безумный Хрякс',
+    tier: 3,
+  },
+  {
+    name: 'Свин-паук',
+    tier: 4,
+  },
+  {
+    name: 'Порк',
+    tier: 6,
+  },
+  {
+    name: 'Космосвинятник',
+    tier: 7,
+  },
+]
+
 const parsedData = ref<any[] | null>(null); // Для хранения данных из CSV файла
 const jsonData = ref<any | null>(null); // Для хранения данных из JSON файла
 const wheelData = ref<any[]>([]); // Для хранения результата сравнения
@@ -139,7 +166,10 @@ const compareData = () => {
           const newItem = {
             id: idCounter++, // Добавляем id с текущим значением счетчика и увеличиваем его
             ...jsonItem, // Все ключи из jsonItem
-            level_name: extractNumber(parsedItem.level_name), // Ключ level_name из parsedData
+            level_name: (() => {
+              const foundTier = subTiers.find(subTier => subTier.name === parsedItem.level_name);
+              return foundTier ? foundTier.tier : null; // Возвращаем tier или null, если не найдено
+            })(),
             start_date: parsedItem.start_date, // Ключ start_date из parsedData
           };
           wheelData.value.push(newItem); // Добавляем новый объект в wheelData
@@ -148,7 +178,6 @@ const compareData = () => {
     });
   }
   console.log(1111, wheelData.value);
-  
 };
 
 const wheelStoped = (index: number) => {

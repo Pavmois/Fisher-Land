@@ -13,9 +13,9 @@
             :alt="sector.author"
             :x="getImageX(sector.id)" 
             :y="getImageY(sector.id)" 
-            width="10%" 
-            height="10%" 
-            transform="translate(-0.1, -0.1)"
+            :width="getImageSize(sector.id) + '%'" 
+            :height="getImageSize(sector.id) + '%'"
+            transform="translate(-0.05, -0.05)"
           />
           <text 
             :x="getTextX(sector.id)" 
@@ -24,9 +24,9 @@
             alignment-baseline="middle" 
             fill="white"
             font-size="0.04"
-            :transform="`rotate(${getRotationAngle(index + 0.5)}, ${getTextX(index)}, ${getTextY(index)})`"
+            :transform="`rotate(${getRotationAngle(index)}, ${getTextX(index)}, ${getTextY(index)})`"
           >
-          {{ index }} {{ truncateText(sector.suggestion) }} {{ sector.id }}
+          {{ truncateText(sector.suggestion) }}
           </text>
         </g>
       </svg>
@@ -99,8 +99,6 @@ const findNearestImage = (lineCenter, imagesCoords) => {
       nearestImage = { index, coords };
     }
   }
-
-  console.log(nearestImage.index);
   emit('wheelStop', Number(nearestImage.index));
   return nearestImage;
 };
@@ -116,54 +114,183 @@ const truncateText = (text) => {
 
 const getSectorPath = (index) => {
   const totalSectors = props.sectors.length;
-  const angle = (2 * Math.PI) / totalSectors;
-  const startAngle = index * angle;
+
+  // Суммируем значения level_name
+  const totalLevelNameSum = props.sectors.reduce((sum, sector) => {
+    return sum + (sector.level_name || 0); // Добавляем значение level_name, если оно существует
+  }, 0);
+
+  // Вычисляем минимальную ширину сектора
+  const minSectorWidth = 360 / totalLevelNameSum;
+
+  // Получаем значение level_name для текущего сектора
+  const currentLevelName = props.sectors[index].level_name || 0;
+
+  // Вычисляем угол для текущего сектора
+  const angle = minSectorWidth * currentLevelName; // Ширина сектора на основе level_name
+  const startAngle = (index === 0 ? 0 : props.sectors.slice(0, index).reduce((sum, sector) => sum + (sector.level_name || 0), 0)) * minSectorWidth;
   const endAngle = startAngle + angle;
 
-  const x1 = Math.cos(startAngle);
-  const y1 = Math.sin(startAngle);
-  const x2 = Math.cos(endAngle);
-  const y2 = Math.sin(endAngle);
+  const x1 = Math.cos((startAngle * Math.PI) / 180);
+  const y1 = Math.sin((startAngle * Math.PI) / 180);
+  const x2 = Math.cos((endAngle * Math.PI) / 180);
+  const y2 = Math.sin((endAngle * Math.PI) / 180);
 
   return `M 0 0 L ${x1} ${y1} A 1 1 0 0 1 ${x2} ${y2} Z`;
 };
 
 const getImageX = (index) => {
   const totalSectors = props.sectors.length;
-  const angle = (2 * Math.PI) / totalSectors;
-  const startAngle = index * angle + angle / 2; // Позиция по центру сектора
-  return 0.75 * Math.cos(startAngle); // Положение по оси X
+
+  // Проверяем, существует ли сектор с данным индексом
+  if (index < 0 || index >= totalSectors) {
+    console.error('Индекс сектора вне диапазона:', index);
+    return 0; // Возвращаем 0 или любое другое значение по умолчанию
+  }
+
+  // Суммируем значения level_name
+  const totalLevelNameSum = props.sectors.reduce((sum, sector) => {
+    return sum + (sector.level_name || 0);
+  }, 0);
+
+  // Вычисляем минимальную ширину сектора
+  const minSectorWidth = 360 / totalLevelNameSum;
+
+  // Получаем значение level_name для текущего сектора
+  const currentLevelName = props.sectors[index]?.level_name || 0;
+
+  // Вычисляем угол для текущего сектора
+  const angle = minSectorWidth * currentLevelName;
+  const startAngle = (index === 0 ? 0 : props.sectors.slice(0, index).reduce((sum, sector) => sum + (sector.level_name || 0), 0)) * minSectorWidth;
+
+  // Позиция по центру сектора
+  const centerAngle = startAngle + angle / 2;
+
+  // Уменьшаем коэффициент, чтобы изображение было ближе к краю сектора
+  const offset = 0.85; // Измените это значение, чтобы настроить расстояние от края
+  return offset * Math.cos((centerAngle * Math.PI) / 180); // Положение по оси X для изображения
 };
 
 const getImageY = (index) => {
   const totalSectors = props.sectors.length;
-  const angle = (2 * Math.PI) / totalSectors;
-  const startAngle = index * angle + angle / 2; // Позиция по центру сектора
-  return 0.75 * Math.sin(startAngle); // Положение по оси Y
+
+  // Проверяем, существует ли сектор с данным индексом
+  if (index < 0 || index >= totalSectors) {
+    console.error('Индекс сектора вне диапазона:', index);
+    return 0; // Возвращаем 0 или любое другое значение по умолчанию
+  }
+
+  // Суммируем значения level_name
+  const totalLevelNameSum = props.sectors.reduce((sum, sector) => {
+    return sum + (sector.level_name || 0);
+  }, 0);
+
+  // Вычисляем минимальную ширину сектора
+  const minSectorWidth = 360 / totalLevelNameSum;
+
+  // Получаем значение level_name для текущего сектора
+  const currentLevelName = props.sectors[index]?.level_name || 0;
+
+  // Вычисляем угол для текущего сектора
+  const angle = minSectorWidth * currentLevelName;
+  const startAngle = (index === 0 ? 0 : props.sectors.slice(0, index).reduce((sum, sector) => sum + (sector.level_name || 0), 0)) * minSectorWidth;
+
+  // Позиция по центру сектора
+  const centerAngle = startAngle + angle / 2;
+
+  // Уменьшаем коэффициент, чтобы изображение было ближе к краю сектора
+  const offset = 0.85; // Измените это значение, чтобы настроить расстояние от края
+  return offset * Math.sin((centerAngle * Math.PI) / 180); // Положение по оси Y для изображения
+};
+
+// Функция для расчета размера изображения на основе ширины сектора
+const getImageSize = (sectorId) => {
+  const sectorWidth = getSectorWidth(sectorId); // Получаем ширину сектора
+  const imageSize = Math.min(sectorWidth * 0.9, 10); // Устанавливаем размер изображения, чтобы он не превышал 90% ширины сектора и 10%
+  return imageSize;
+};
+
+// Функция для получения ширины сектора
+const getSectorWidth = (sectorId) => {
+  // Здесь нужно реализовать логику для расчета ширины сектора на основе его id
+  // Например, если у вас есть массив с секторами, вы можете использовать его для получения ширины
+  const sectorIndex = props.sectors.findIndex(sector => sector.id === sectorId);
+  const totalWidth = 100; // Общая ширина колеса в процентах
+  const sectorCount = props.sectors.length;
+  return totalWidth / sectorCount; // Ширина сектора в процентах
 };
 
 const getTextX = (index) => {
   const totalSectors = props.sectors.length;
-  const angle = (2 * Math.PI) / totalSectors;
-  const startAngle = index * angle + angle / 2; // Позиция по центру сектора
-  return 0.35 * Math.cos(startAngle); // Положение по оси X для текста
+
+  // Суммируем значения level_name
+  const totalLevelNameSum = props.sectors.reduce((sum, sector) => {
+    return sum + (sector.level_name || 0);
+  }, 0);
+
+  // Вычисляем минимальную ширину сектора
+  const minSectorWidth = 360 / totalLevelNameSum;
+
+  // Получаем значение level_name для текущего сектора
+  const currentLevelName = props.sectors[index].level_name || 0;
+
+  // Вычисляем угол для текущего сектора
+  const angle = minSectorWidth * currentLevelName;
+  const startAngle = (index === 0 ? 0 : props.sectors.slice(0, index).reduce((sum, sector) => sum + (sector.level_name || 0), 0)) * minSectorWidth;
+
+  // Позиция по центру сектора
+  const centerAngle = startAngle + angle / 2;
+
+  return 0.5 * Math.cos((centerAngle * Math.PI) / 180); // Положение по оси X для текста
 };
 
 const getTextY = (index) => {
   const totalSectors = props.sectors.length;
-  const angle = (2 * Math.PI) / totalSectors;
-  const startAngle = index * angle + angle / 2; // Позиция по центру сектора
-  return 0.35 * Math.sin(startAngle); // Положение по оси Y для текста
+
+  // Суммируем значения level_name
+  const totalLevelNameSum = props.sectors.reduce((sum, sector) => {
+    return sum + (sector.level_name || 0);
+  }, 0);
+
+  // Вычисляем минимальную ширину сектора
+  const minSectorWidth = 360 / totalLevelNameSum;
+
+  // Получаем значение level_name для текущего сектора
+  const currentLevelName = props.sectors[index].level_name || 0;
+
+  // Вычисляем угол для текущего сектора
+  const angle = minSectorWidth * currentLevelName;
+  const startAngle = (index === 0 ? 0 : props.sectors.slice(0, index).reduce((sum, sector) => sum + (sector.level_name || 0), 0)) * minSectorWidth;
+
+  // Позиция по центру сектора
+  const centerAngle = startAngle + angle / 2;
+
+  return 0.5 * Math.sin((centerAngle * Math.PI) / 180); // Положение по оси Y для текста
 };
 
 // Функция для вычисления угла поворота текста
 const getRotationAngle = (index) => {
   const totalSectors = props.sectors.length;
-  const angle = (360 / totalSectors) * index; // Угол в градусах
-  if (angle >= 90 && angle <= 250) {
-    return angle - 180; // Поворачиваем в другую сторону
-  }
-  return angle; // Возвращаем угол
+
+  // Суммируем значения level_name
+  const totalLevelNameSum = props.sectors.reduce((sum, sector) => {
+    return sum + (sector.level_name || 0);
+  }, 0);
+
+  // Вычисляем минимальную ширину сектора
+  const minSectorWidth = 360 / totalLevelNameSum;
+
+  // Получаем значение level_name для текущего сектора
+  const currentLevelName = props.sectors[index].level_name || 0;
+
+  // Вычисляем угол для текущего сектора
+  const angle = minSectorWidth * currentLevelName;
+  const startAngle = (index === 0 ? 0 : props.sectors.slice(0, index).reduce((sum, sector) => sum + (sector.level_name || 0), 0)) * minSectorWidth;
+
+  // Угол поворота текста совпадает с углом поворота сектора
+  const rotationAngle = startAngle + angle / 2;
+
+  return rotationAngle; // Возвращаем угол поворота текста
 };
 </script>
 
