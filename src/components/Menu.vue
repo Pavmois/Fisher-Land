@@ -20,10 +20,6 @@
 import { ref } from 'vue';
 
 const showIcons = ref(false);
-
-const toggleIcons = () => {
-  showIcons.value = !showIcons.value;
-};
 </script>
 
 <style lang="scss" scoped>
