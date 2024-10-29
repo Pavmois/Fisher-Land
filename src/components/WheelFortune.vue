@@ -1,358 +1,263 @@
 <template>
-  <div class="wheel-wrapper">
-    <button @click="spinWheel()">Вращать колесо</button>
-    <div class="wheel-svg" :style="{ transform: `rotate(${rotationAngle}rad)`, transition: 'transform 1s ease-out' }">
-      <svg viewBox="-1 -1 2 2">
-        <g v-for="(sector, index) in sectors" :key="sector.id">
-          <path
-            :d="getSectorPath(sector.id)"
-            :fill="`hsl(${(index / sectors.length) * 360}, 55%, 40%)`" 
-          />
-          <image 
-            :href="sector.avatar"
-            :alt="sector.author"
-            :x="getImageX(sector.id)" 
-            :y="getImageY(sector.id)" 
-            :width="getImageSize(sector.id) + '%'" 
-            :height="getImageSize(sector.id) + '%'"
-            transform="translate(-0.05, -0.05)"
-          />
-          <text 
-            :x="getTextX(sector.id)" 
-            :y="getTextY(sector.id)" 
-            text-anchor="middle" 
-            alignment-baseline="middle" 
-            fill="white"
-            font-size="0.04"
-            :transform="`rotate(${getRotationAngle(index)}, ${getTextX(index)}, ${getTextY(index)})`"
-          >
-          {{ truncateText(sector.suggestion) }}
-          </text>
-        </g>
-      </svg>
-
-    </div>
+  <div class="wrapper">
+    <button @click="spinWheel(3000)">Крутить колесо на 3 секунды</button>
+    <canvas ref="canvas" :width="canvasWidth" :height="canvasHeight"></canvas>
     <div class="david-look">WINNER!</div>
-    <div class="line"></div>
   </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue';
+import { ref, watch, onMounted, nextTick, defineEmits } from 'vue';
 
-const emit = defineEmits();
 const props = defineProps({
   sectors: {
     type: Array,
     required: true
   }
 });
+const emit = defineEmits();
 
-const rotationAngle = ref(0); // Добавляем реактивную переменную для угла вращения
+const canvas = ref(null);
+const canvasWidth = 800; // Ширина канваса
+const canvasHeight = 800; // Высота канваса
+const rotationAngle = ref(0); // Угол вращения
+const images = ref([]); // Массив для хранения загруженных изображений
 
-const spinWheel = () => {
-  const fullRotations = 10; // Количество полных оборотов
-  const randomFactor = Math.random() * (280 - 80) + 80; // Генерируем рандомное значение от 80 до 280
-  rotationAngle.value += (fullRotations * 2 * Math.PI) + (randomFactor * (Math.PI / 180)); // Добавляем 10 оборотов и рандомное значение в радианах
-
-  // Устанавливаем таймер для вызова функций после завершения вращения
-  setTimeout(() => {
-  const lineCenter = getLineCenter();
-  const imagesCoords = getImagesCoords();
-  findNearestImage(lineCenter, imagesCoords);
-}, 1000); // Задержка 5 секунд, чтобы совпадало с длительностью вращения
+const truncateText = (text, maxLength) => {
+  if (text.length > maxLength) {
+    return text.substring(0, maxLength) + '...';
+  }
+  return text;
 };
 
-const getLineCenter = () => {
-  const lineElement = document.querySelector('.line');
-  const rect = lineElement.getBoundingClientRect();
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-  return { x: centerX, y: centerY };
+const drawRotatedText = (ctx, text, x, y, angle) => {
+  ctx.save(); // Сохраняем текущее состояние контекста
+  ctx.translate(x, y); // Перемещаем начало координат
+  ctx.rotate(angle); // Поворачиваем контекст
+  ctx.fillText(text, 0, 0); // Рисуем текст
+  ctx.restore(); // Восстанавливаем состояние контекста
 };
 
-const getImagesCoords = () => {
-  const imagesCoords = {};
-  const images = document.querySelectorAll('.wheel-svg image');
+const calculateImageSize = (sectorAngle) => {
+  const sectorWidth = (sectorAngle / (2 * Math.PI)) * canvasWidth; // Ширина сектора в пикселях
+  return Math.min(sectorWidth / 0.8, 100); // Размер изображения не больше 50% ширины сектора
+};
+
+const getTrianglePoint = (canvasWidth, canvasHeight, triangleHeight = 20) => {
+  return {
+    x: canvasWidth - 5, // X-координата
+    y: canvasHeight / 2 // Y-координата
+  };
+};
+
+const drawArrow = (ctx) => {
+  ctx.fillStyle = 'rgba(255, 0, 0, 0)'; // Цвет стрелки
+  ctx.beginPath();
+  ctx.moveTo(canvasWidth - 5, canvasHeight / 2); // Перемещаемся к правой стороне канваса
+  ctx.lineTo(canvasWidth - 40, canvasHeight / 2 - 15); // Левый угол стрелки
+  ctx.lineTo(canvasWidth - 40, canvasHeight / 2 + 15); // Правый угол стрелки
+  ctx.closePath();
+  ctx.fill(); // Заполняем стрелку цветом
+};
+
+const drawWheel = () => {
+  if (!canvas.value) return; // Проверка на null
+  const ctx = canvas.value.getContext('2d');
+  const numSectors = props.sectors.length;
+  const totalLevel = props.sectors.reduce((sum, sector) => sum + sector.level_name, 0); // Сумма всех level_name
+  const anglePerSector = (2 * Math.PI) / totalLevel; // Угол на единицу level_name
+  const textRadius = canvasWidth / 2 * 0.5; // Радиус для текста (50% от радиуса колеса)
+  const imageRadius = canvasWidth / 2 * 0.8; // Радиус для изображений (80% от радиуса колеса)
+
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight); // Очистка канваса
+
+  let currentAngle = rotationAngle.value; // Начальный угол для отрисовки
+
+  for (let i = 0; i < numSectors; i++) {
+    const sector = props.sectors[i];
+    const sectorAngle = anglePerSector * sector.level_name; // Угол сектора на основе level_name    
+
+    // Рисуем сектор
+    ctx.beginPath();
+    ctx.moveTo(canvasWidth / 2, canvasHeight / 2);
+    ctx.arc(canvasWidth / 2, canvasHeight / 2, canvasWidth / 2, currentAngle, currentAngle + sectorAngle);
+    ctx.fillStyle = `hsl(${(i / numSectors) * 360}, 40%, 30%)`; // Цвет сектора
+    ctx.fill();
+    ctx.stroke();
+
+    // Устанавливаем размер шрифта в зависимости от level_name
+    if (sector.level_name > 5) {
+      ctx.font = '18px Arial';
+    } else if (sector.level_name >= 2 && sector.level_name <= 4) {
+      ctx.font = '14px Arial';
+    } else if (sector.level_name === 1) {
+      ctx.font = '10px Arial';
+    }
+    ctx.textAlign = 'right'; // Выравнивание текста по центру
+    ctx.fillStyle = '#FFFFFF'; // Цвет текста
+
+    // Обрезаем текст
+    const suggestionText = truncateText(sector.suggestion, 17);
+    const textX = canvasWidth / 2 + Math.cos(currentAngle + sectorAngle / 1.8) * textRadius;
+    const textY = canvasHeight / 2 + Math.sin(currentAngle + sectorAngle / 2) * textRadius;
+
+    // Рисуем текст, поворачивая его вдоль сектора
+    drawRotatedText(ctx, suggestionText, textX, textY, currentAngle + sectorAngle / 2);
+    
+    // Рассчитываем размер изображения пропорционально ширине сектора
+    const imageSize = calculateImageSize(sectorAngle); // Пропорциональный размер изображения
+    
+    // Рисуем изображение, если оно загружено
+    if (images.value[i]) {
+      const imgX = canvasWidth / 2 + Math.cos(currentAngle + sectorAngle / 2) * imageRadius;
+      const imgY = canvasHeight / 2 + Math.sin(currentAngle + sectorAngle / 2) * imageRadius;
+      ctx.drawImage(images.value[i], imgX - imageSize / 2, imgY - imageSize / 2, imageSize, imageSize); // Рисуем изображение
+    }
+
+    currentAngle += sectorAngle; // Обновляем текущий угол для следующего сектора
+  }
+
+  // Рисуем стрелку после отрисовки колеса
+  drawArrow(ctx);
+};
+
+const getSectorCoordinates = (rotationAngle) => {
+  const sectorCoordinates = [];
+  const totalSectors = props.sectors.length;
+  const outerRadius = Math.min(canvasWidth, canvasHeight) / 2; // Внешний радиус колеса
+  const totalLevel = props.sectors.reduce((sum, sector) => sum + sector.level_name, 0); // Сумма всех level_name
+  const anglePerSector = (2 * Math.PI) / totalLevel; // Угол на единицу level_name
+  let currentAngle = rotationAngle; // Используем текущее значение угла вращения
   
-  images.forEach((image, index) => {
-    const rect = image.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    imagesCoords[index] = { x: centerX, y: centerY };
-  });
+  for (let i = 0; i < totalSectors; i++) {
+    const sector = props.sectors[i];
+    const sectorAngle = anglePerSector * sector.level_name; // Угол сектора на основе level_name  
+    
+    // Координаты начала сектора
+    const startX = canvasWidth / 2 + Math.cos(currentAngle) * outerRadius;
+    const startY = canvasHeight / 2 + Math.sin(currentAngle) * outerRadius;
 
-  return imagesCoords;
+    // Координаты конца сектора
+    const endX = canvasWidth / 2 + Math.cos(currentAngle + sectorAngle) * outerRadius;
+    const endY = canvasHeight / 2 + Math.sin(currentAngle + sectorAngle) * outerRadius;
+
+    sectorCoordinates.push({
+      sector: props.sectors[i].suggestion,
+      startCoordinates: { x: startX, y: startY },
+      endCoordinates: { x: endX, y: endY }
+    });
+
+    currentAngle += sectorAngle; // Обновляем текущий угол для следующего сектора
+  }
+
+  return sectorCoordinates;
 };
 
-const findNearestImage = (lineCenter, imagesCoords) => {
-  let nearestImage = null;
-  let minDistance = Infinity;
+const spinWheel = (duration) => {
+  const startTime = performance.now();
+  let speed = 0.1; // Начальная скорость вращения
 
-  for (const [index, coords] of Object.entries(imagesCoords)) {
-    const distance = Math.sqrt(
-      Math.pow(coords.x - lineCenter.x, 2) + Math.pow(coords.y - lineCenter.y, 2)
-    );
+  const animate = (currentTime) => {
+    const elapsed = currentTime - startTime;
 
-    if (distance < minDistance) {
-      minDistance = distance;
-      nearestImage = { index, coords };
+    if (elapsed < duration) {
+      rotationAngle.value += speed; // Увеличиваем угол вращения
+      speed *= 0.99; // Постепенно уменьшаем скорость
+      drawWheel(); // Перерисовываем колесо
+      requestAnimationFrame(animate); // Запрашиваем следующий кадр
+    } else {
+      // Плавная остановка
+      const stopAnimation = (stopTime) => {
+        if (speed > 0.01) {
+          rotationAngle.value += speed; // Увеличиваем угол вращения
+          speed *= 0.95; // Постепенно уменьшаем скорость
+          drawWheel(); // Перерисовываем колесо
+          requestAnimationFrame(stopAnimation); // Запрашиваем следующий кадр
+        } else {
+          speed = 0; // Устанавливаем скорость в 0
+          drawWheel(); // Перерисовываем колесо в конечном состоянии
+          const point = getTrianglePoint(canvasWidth, canvasHeight); // Получаем координаты точки
+          const coordinates = getSectorCoordinates(rotationAngle.value);
+          emit('wheelStop', findSectorByPointY(point.y, coordinates));
+          
+        }
+      };
+      requestAnimationFrame(stopAnimation); // Запускаем анимацию остановки
+    }
+  };
+
+  requestAnimationFrame(animate); // Запускаем анимацию
+};
+
+const findSectorByPointY = (pointY, coordinates) => {  
+  for (let i = 0; i < coordinates.length; i++) {
+    const { startCoordinates, endCoordinates, sector } = coordinates[i];  
+    if (pointY > startCoordinates.y && pointY < endCoordinates.y) {      
+      return i;
     }
   }
-  emit('wheelStop', Number(nearestImage.index));
-  return nearestImage;
+  return null; // Возвращаем null, если ничего не найдено
 };
 
-// Функция для обрезки текста с добавлением многоточия
-const truncateText = (text) => {
-  const maxLength = 15; // Максимальная длина текста
-  if (text.length > maxLength) {
-    return text.slice(0, maxLength) + '...'; // Обрезаем текст и добавляем многоточие
-  }
-  return text; // Возвращаем оригинальный текст, если он меньше или равен максимальной длине
+const loadImages = () => {
+  images.value = props.sectors.map(sector => {
+    const img = new Image();
+    img.src = sector.avatar; // Путь к изображению
+    return img;
+  });
 };
 
-const getSectorPath = (index) => {
-  const totalSectors = props.sectors.length;
+// Watch for changes in props.sectors and redraw the wheel
+watch(() => props.sectors, (newSectors) => {
+  loadImages(); // Загружаем новые изображения
+  drawWheel(); // Перерисовываем колесо
+}, { immediate: true });
 
-  // Суммируем значения level_name
-  const totalLevelNameSum = props.sectors.reduce((sum, sector) => {
-    return sum + (sector.level_name || 0); // Добавляем значение level_name, если оно существует
-  }, 0);
 
-  // Вычисляем минимальную ширину сектора
-  const minSectorWidth = 360 / totalLevelNameSum;
-
-  // Получаем значение level_name для текущего сектора
-  const currentLevelName = props.sectors[index].level_name || 0;
-
-  // Вычисляем угол для текущего сектора
-  const angle = minSectorWidth * currentLevelName; // Ширина сектора на основе level_name
-  const startAngle = (index === 0 ? 0 : props.sectors.slice(0, index).reduce((sum, sector) => sum + (sector.level_name || 0), 0)) * minSectorWidth;
-  const endAngle = startAngle + angle;
-
-  const x1 = Math.cos((startAngle * Math.PI) / 180);
-  const y1 = Math.sin((startAngle * Math.PI) / 180);
-  const x2 = Math.cos((endAngle * Math.PI) / 180);
-  const y2 = Math.sin((endAngle * Math.PI) / 180);
-
-  return `M 0 0 L ${x1} ${y1} A 1 1 0 0 1 ${x2} ${y2} Z`;
-};
-
-const getImageX = (index) => {
-  const totalSectors = props.sectors.length;
-
-  // Проверяем, существует ли сектор с данным индексом
-  if (index < 0 || index >= totalSectors) {
-    console.error('Индекс сектора вне диапазона:', index);
-    return 0; // Возвращаем 0 или любое другое значение по умолчанию
-  }
-
-  // Суммируем значения level_name
-  const totalLevelNameSum = props.sectors.reduce((sum, sector) => {
-    return sum + (sector.level_name || 0);
-  }, 0);
-
-  // Вычисляем минимальную ширину сектора
-  const minSectorWidth = 360 / totalLevelNameSum;
-
-  // Получаем значение level_name для текущего сектора
-  const currentLevelName = props.sectors[index]?.level_name || 0;
-
-  // Вычисляем угол для текущего сектора
-  const angle = minSectorWidth * currentLevelName;
-  const startAngle = (index === 0 ? 0 : props.sectors.slice(0, index).reduce((sum, sector) => sum + (sector.level_name || 0), 0)) * minSectorWidth;
-
-  // Позиция по центру сектора
-  const centerAngle = startAngle + angle / 2;
-
-  // Уменьшаем коэффициент, чтобы изображение было ближе к краю сектора
-  const offset = 0.85; // Измените это значение, чтобы настроить расстояние от края
-  return offset * Math.cos((centerAngle * Math.PI) / 180); // Положение по оси X для изображения
-};
-
-const getImageY = (index) => {
-  const totalSectors = props.sectors.length;
-
-  // Проверяем, существует ли сектор с данным индексом
-  if (index < 0 || index >= totalSectors) {
-    console.error('Индекс сектора вне диапазона:', index);
-    return 0; // Возвращаем 0 или любое другое значение по умолчанию
-  }
-
-  // Суммируем значения level_name
-  const totalLevelNameSum = props.sectors.reduce((sum, sector) => {
-    return sum + (sector.level_name || 0);
-  }, 0);
-
-  // Вычисляем минимальную ширину сектора
-  const minSectorWidth = 360 / totalLevelNameSum;
-
-  // Получаем значение level_name для текущего сектора
-  const currentLevelName = props.sectors[index]?.level_name || 0;
-
-  // Вычисляем угол для текущего сектора
-  const angle = minSectorWidth * currentLevelName;
-  const startAngle = (index === 0 ? 0 : props.sectors.slice(0, index).reduce((sum, sector) => sum + (sector.level_name || 0), 0)) * minSectorWidth;
-
-  // Позиция по центру сектора
-  const centerAngle = startAngle + angle / 2;
-
-  // Уменьшаем коэффициент, чтобы изображение было ближе к краю сектора
-  const offset = 0.85; // Измените это значение, чтобы настроить расстояние от края
-  return offset * Math.sin((centerAngle * Math.PI) / 180); // Положение по оси Y для изображения
-};
-
-// Функция для расчета размера изображения на основе ширины сектора
-const getImageSize = (sectorId) => {
-  const sectorWidth = getSectorWidth(sectorId); // Получаем ширину сектора
-  const imageSize = Math.min(sectorWidth * 0.9, 10); // Устанавливаем размер изображения, чтобы он не превышал 90% ширины сектора и 10%
-  return imageSize;
-};
-
-// Функция для получения ширины сектора
-const getSectorWidth = (sectorId) => {
-  // Здесь нужно реализовать логику для расчета ширины сектора на основе его id
-  // Например, если у вас есть массив с секторами, вы можете использовать его для получения ширины
-  const sectorIndex = props.sectors.findIndex(sector => sector.id === sectorId);
-  const totalWidth = 100; // Общая ширина колеса в процентах
-  const sectorCount = props.sectors.length;
-  return totalWidth / sectorCount; // Ширина сектора в процентах
-};
-
-const getTextX = (index) => {
-  const totalSectors = props.sectors.length;
-
-  // Суммируем значения level_name
-  const totalLevelNameSum = props.sectors.reduce((sum, sector) => {
-    return sum + (sector.level_name || 0);
-  }, 0);
-
-  // Вычисляем минимальную ширину сектора
-  const minSectorWidth = 360 / totalLevelNameSum;
-
-  // Получаем значение level_name для текущего сектора
-  const currentLevelName = props.sectors[index].level_name || 0;
-
-  // Вычисляем угол для текущего сектора
-  const angle = minSectorWidth * currentLevelName;
-  const startAngle = (index === 0 ? 0 : props.sectors.slice(0, index).reduce((sum, sector) => sum + (sector.level_name || 0), 0)) * minSectorWidth;
-
-  // Позиция по центру сектора
-  const centerAngle = startAngle + angle / 2;
-
-  return 0.5 * Math.cos((centerAngle * Math.PI) / 180); // Положение по оси X для текста
-};
-
-const getTextY = (index) => {
-  const totalSectors = props.sectors.length;
-
-  // Суммируем значения level_name
-  const totalLevelNameSum = props.sectors.reduce((sum, sector) => {
-    return sum + (sector.level_name || 0);
-  }, 0);
-
-  // Вычисляем минимальную ширину сектора
-  const minSectorWidth = 360 / totalLevelNameSum;
-
-  // Получаем значение level_name для текущего сектора
-  const currentLevelName = props.sectors[index].level_name || 0;
-
-  // Вычисляем угол для текущего сектора
-  const angle = minSectorWidth * currentLevelName;
-  const startAngle = (index === 0 ? 0 : props.sectors.slice(0, index).reduce((sum, sector) => sum + (sector.level_name || 0), 0)) * minSectorWidth;
-
-  // Позиция по центру сектора
-  const centerAngle = startAngle + angle / 2;
-
-  return 0.5 * Math.sin((centerAngle * Math.PI) / 180); // Положение по оси Y для текста
-};
-
-// Функция для вычисления угла поворота текста
-const getRotationAngle = (index) => {
-  const totalSectors = props.sectors.length;
-
-  // Суммируем значения level_name
-  const totalLevelNameSum = props.sectors.reduce((sum, sector) => {
-    return sum + (sector.level_name || 0);
-  }, 0);
-
-  // Вычисляем минимальную ширину сектора
-  const minSectorWidth = 360 / totalLevelNameSum;
-
-  // Получаем значение level_name для текущего сектора
-  const currentLevelName = props.sectors[index].level_name || 0;
-
-  // Вычисляем угол для текущего сектора
-  const angle = minSectorWidth * currentLevelName;
-  const startAngle = (index === 0 ? 0 : props.sectors.slice(0, index).reduce((sum, sector) => sum + (sector.level_name || 0), 0)) * minSectorWidth;
-
-  // Угол поворота текста совпадает с углом поворота сектора
-  const rotationAngle = startAngle + angle / 2;
-
-  return rotationAngle; // Возвращаем угол поворота текста
-};
+onMounted(() => {
+  loadImages(); // Загружаем изображения при монтировании
+  nextTick(() => {
+    drawWheel(); // Вызываем drawWheel после монтирования
+  });
+});
 </script>
 
 <style lang="scss" scoped>
-.wheel-wrapper {
+.wrapper {
   position: relative;
   width: 800px;
   margin: auto;
-  .david-look {
-    position: absolute;
-    top: 57%;
-    right: 0;
-    width: 200px;
-    height: 230px;
-    text-align: left;
-    z-index: 1;
-    background-image: url("/src/assets/arrow-david.png");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    border-radius: 20px;
-    letter-spacing: 2px;
-    font-size: 20px;
-    animation: swing 2s ease-in-out infinite;
-  }
+  margin-top: 36px;
 }
-.wheel-svg {
-  border: 2px solid rgb(255, 255, 255);
-  border-radius: 50%;
-}
-.line {
+
+.david-look {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
-  right: 20px;
-  width: 1px;
-  height: 1px;
-  background: whitesmoke;
-
+  transform: translateY(-45px);
+  right: -195px;
+  width: 200px;
+  height: 230px;
+  text-align: left;
+  z-index: 1;
+  background-image: url("/src/assets/arrow-david.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  border-radius: 20px;
+  letter-spacing: 2px;
+  font-size: 20px;
+  animation: swing 2s ease-in-out infinite;
 }
 // Определяем ключевые кадры для анимации
 @keyframes swing {
   0% {
-    transform: translate(90%, -50%) rotate(-2deg);
+    transform: translate(0%, -45px) rotate(-2deg);
   }
   50% {
-    transform: translate(90%, -50%) rotate(2deg); // Поворачиваем в другую сторону
+    transform: translate(0%, -45px) rotate(2deg); // Поворачиваем в другую сторону
   }
   100% {
-    transform: translate(90%, -50%) rotate(-2deg);
+    transform: translate(0%, -45px) rotate(-2deg);
   }
-}
-svg {
-  display: block;
-  margin: auto;
-  border-radius: 50%;
-}
-button {
-  width: 250px;
-  margin: auto;
-  margin-top: 36px;
-  margin-bottom: 16px;
-  cursor: pointer;
 }
 </style>

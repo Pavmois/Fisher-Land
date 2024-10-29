@@ -57,7 +57,7 @@
       </div>
     </div>
 
-    <WheelFortune v-if="wheelData.length" :key="wheelData.length" :sectors="wheelData" @wheelStop="wheelStoped"/>
+    <WheelFortune v-if="wheelData.length" :sectors="wheelData" @wheelStop="wheelStoped"/>
 
   </div>
 </template>
@@ -177,12 +177,9 @@ const compareData = () => {
       });
     });
   }
-  console.log(1111, wheelData.value);
 };
 
 const wheelStoped = (index: number) => {
-  console.log(index);
-
   setTimeout(() => {
     // Удаляем объект по индексу
     if (index >= 0 && index < wheelData.value.length) {
@@ -201,7 +198,7 @@ const wheelStoped = (index: number) => {
       id: newIndex // Присваиваем новые id по порядку, начиная с 0
     }));
     }
-  }, 2000);
+  }, 1500);
 
 }
 </script>
