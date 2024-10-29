@@ -29,6 +29,7 @@ const showIcons = ref(false);
   justify-content: end;
   right: 12px;
   bottom: 12px;
+  z-index: 999;
 }
 .menu-wrapper {
   position: relative;
