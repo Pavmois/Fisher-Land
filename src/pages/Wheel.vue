@@ -55,6 +55,12 @@
           </div>
         </div>
       </div>
+
+      <div class="copyText">
+        <button class="copyBtn" @click="getSuggestionsString(winners)">
+          Скопировать победителей
+        </button>
+      </div>
     </div>
 
     <WheelFortune v-if="wheelData.length" :sectors="wheelData" @wheelStop="wheelStoped"/>
@@ -149,10 +155,19 @@ const handleJsonFileChange = (event: Event) => {
   }
 };
 
-const extractNumber = (str: string) => {
-  const match = str.match(/\d+/); // Ищем первое числовое значение в строке
-  return match ? parseInt(match[0], 10) : null; // Возвращаем число или null, если число не найдено
-};
+async function getSuggestionsString(winners: any) {
+  const suggestionsString = winners.map((winner: { suggestion: string; }) => winner.suggestion).join(' -> ');
+
+  // Копируем строку в буфер обмена
+  try {
+    await navigator.clipboard.writeText(suggestionsString);
+    alert('Скопировано в буфер обмена:' + suggestionsString);
+  } catch (err) {
+    alert('Ошибка при копировании в буфер обмена:' + err);
+  }
+
+  return suggestionsString;
+}
 
 // Функция для сравнения данных
 const compareData = () => {
@@ -198,7 +213,7 @@ const wheelStoped = (index: number) => {
       id: newIndex // Присваиваем новые id по порядку, начиная с 0
     }));
     }
-  }, 1500);
+  }, 500);
 
 }
 </script>
@@ -290,7 +305,18 @@ const wheelStoped = (index: number) => {
     border: 1px solid #ccc;
     border-radius: 5px;
   }
-
+  .copyText {
+    display: flex;
+    align-items: start;
+    margin-top: 8px;
+    .copyBtn {
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #3f4d45;
+      color: white;
+    }
+  }
   .wheel-output {
     margin: auto;
     margin-top: 16px;

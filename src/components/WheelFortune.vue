@@ -1,6 +1,9 @@
 <template>
-  <div class="wrapper">
-    <button @click="spinWheel(3000)">Крутить колесо на 3 секунды</button>
+  <div class="wrapper" :class="{ disabled: !btnActive }">
+    <div class="manage">
+      <input class="timer" type="range" v-model="spinDuration" min="5" max="60" step="1" />
+      <button class="start" @click="spinWheel(spinDuration * 1000)">Крутить<br/> {{ spinDuration }} секунд</button>
+    </div>
     <canvas ref="canvas" :width="canvasWidth" :height="canvasHeight"></canvas>
     <div class="david-look">WINNER!</div>
   </div>
@@ -18,10 +21,12 @@ const props = defineProps({
 const emit = defineEmits();
 
 const canvas = ref(null);
-const canvasWidth = 800; // Ширина канваса
-const canvasHeight = 800; // Высота канваса
+const canvasWidth = 900; // Ширина канваса
+const canvasHeight = 900; // Высота канваса
 const rotationAngle = ref(0); // Угол вращения
 const images = ref([]); // Массив для хранения загруженных изображений
+const spinDuration = ref(10); // Начальное значение времени вращения
+const btnActive = ref(true);
 
 const truncateText = (text, maxLength) => {
   if (text.length > maxLength) {
@@ -154,40 +159,87 @@ const getSectorCoordinates = (rotationAngle) => {
 };
 
 const spinWheel = (duration) => {
+  btnActive.value = false;
   const startTime = performance.now();
-  let speed = 0.1; // Начальная скорость вращения
+  const endTime = startTime + duration; // Время окончания
+  const speed = (2 * Math.PI) / 1000 * 26; // Скорость вращения (2 оборота в секунду)
 
   const animate = (currentTime) => {
     const elapsed = currentTime - startTime;
 
-    if (elapsed < duration) {
+    if (currentTime < endTime) {
       rotationAngle.value += speed; // Увеличиваем угол вращения
-      speed *= 0.99; // Постепенно уменьшаем скорость
       drawWheel(); // Перерисовываем колесо
       requestAnimationFrame(animate); // Запрашиваем следующий кадр
     } else {
-      // Плавная остановка
-      const stopAnimation = (stopTime) => {
-        if (speed > 0.01) {
-          rotationAngle.value += speed; // Увеличиваем угол вращения
-          speed *= 0.95; // Постепенно уменьшаем скорость
-          drawWheel(); // Перерисовываем колесо
-          requestAnimationFrame(stopAnimation); // Запрашиваем следующий кадр
-        } else {
-          speed = 0; // Устанавливаем скорость в 0
-          drawWheel(); // Перерисовываем колесо в конечном состоянии
-          const point = getTrianglePoint(canvasWidth, canvasHeight); // Получаем координаты точки
-          const coordinates = getSectorCoordinates(rotationAngle.value);
-          emit('wheelStop', findSectorByPointY(point.y, coordinates));
-          
-        }
-      };
-      requestAnimationFrame(stopAnimation); // Запускаем анимацию остановки
+      smoothStop(); // Запускаем плавную остановку
     }
+  };
+
+  const smoothStop = () => {
+    let stopSpeed = speed; // Начальная скорость для остановки
+    const stopDuration = 3000; // Время остановки в миллисекундах
+    const stopStartTime = performance.now();
+
+    const stopAnimation = (currentTime) => {
+      const elapsed = currentTime - stopStartTime;
+
+      if (elapsed < stopDuration) {
+        stopSpeed *= 0.95; // Постепенно уменьшаем скорость
+        rotationAngle.value += stopSpeed; // Увеличиваем угол вращения
+        drawWheel(); // Перерисовываем колесо
+        requestAnimationFrame(stopAnimation); // Запрашиваем следующий кадр
+      } else {
+        rotationAngle.value += 0; // Устанавливаем угол вращения в конечное состояние
+        drawWheel(); // Перерисовываем колесо в конечном состоянии
+        const point = getTrianglePoint(canvasWidth, canvasHeight); // Получаем координаты точки
+        const coordinates = getSectorCoordinates(rotationAngle.value);
+        emit('wheelStop', findSectorByPointY(point.y, coordinates));
+        btnActive.value = true;
+      }
+    };
+
+    requestAnimationFrame(stopAnimation); // Запускаем анимацию остановки
   };
 
   requestAnimationFrame(animate); // Запускаем анимацию
 };
+
+// const spinWheel = (duration) => {
+//   const startTime = performance.now();
+//   let speed = 0.1; // Начальная скорость вращения
+
+//   const animate = (currentTime) => {
+//     const elapsed = currentTime - startTime;
+
+//     if (elapsed < duration) {
+//       rotationAngle.value += speed; // Увеличиваем угол вращения
+//       speed *= 0.99; // Постепенно уменьшаем скорость
+//       drawWheel(); // Перерисовываем колесо
+//       requestAnimationFrame(animate); // Запрашиваем следующий кадр
+//     } else {
+//       // Плавная остановка
+//       const stopAnimation = (stopTime) => {
+//         if (speed > 0.01) {
+//           rotationAngle.value += speed; // Увеличиваем угол вращения
+//           speed *= 0.95; // Постепенно уменьшаем скорость
+//           drawWheel(); // Перерисовываем колесо
+//           requestAnimationFrame(stopAnimation); // Запрашиваем следующий кадр
+//         } else {
+//           speed = 0; // Устанавливаем скорость в 0
+//           drawWheel(); // Перерисовываем колесо в конечном состоянии
+//           const point = getTrianglePoint(canvasWidth, canvasHeight); // Получаем координаты точки
+//           const coordinates = getSectorCoordinates(rotationAngle.value);
+//           emit('wheelStop', findSectorByPointY(point.y, coordinates));
+          
+//         }
+//       };
+//       requestAnimationFrame(stopAnimation); // Запускаем анимацию остановки
+//     }
+//   };
+
+//   requestAnimationFrame(animate); // Запускаем анимацию
+// };
 
 const findSectorByPointY = (pointY, coordinates) => {  
   for (let i = 0; i < coordinates.length; i++) {
@@ -215,25 +267,59 @@ watch(() => props.sectors, (newSectors) => {
 
 
 onMounted(() => {
-  loadImages(); // Загружаем изображения при монтировании
   nextTick(() => {
     drawWheel(); // Вызываем drawWheel после монтирования
+    loadImages(); // Загружаем новые изображения
   });
+  loadImages(); // Загружаем изображения при монтировании
 });
 </script>
 
 <style lang="scss" scoped>
 .wrapper {
   position: relative;
-  width: 800px;
+  width: 900px;
   margin: auto;
   margin-top: 36px;
 }
-
+.disabled {
+  pointer-events: none;
+}
+.timer {
+  cursor: pointer;
+}
+.manage {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  max-width: 250px;
+  justify-content: end;
+  gap: 8px;
+  .start {
+    margin: auto;
+    cursor: pointer;
+    background: #3f4d45;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    outline: none;
+    color: white;
+    transition: 0.2s linear;
+    &:hover {
+      background-color: rgb(58, 73, 64)
+    }
+    &:active {
+      transform: scale(0.85);
+    }
+  }
+}
 .david-look {
   position: absolute;
   top: 50%;
-  transform: translateY(-45px);
+  transform: translateY(-55px);
   right: -195px;
   width: 200px;
   height: 230px;
@@ -251,13 +337,13 @@ onMounted(() => {
 // Определяем ключевые кадры для анимации
 @keyframes swing {
   0% {
-    transform: translate(0%, -45px) rotate(-2deg);
+    transform: translate(0%, -55px) rotate(-2deg);
   }
   50% {
-    transform: translate(0%, -45px) rotate(2deg); // Поворачиваем в другую сторону
+    transform: translate(0%, -55px) rotate(2deg); // Поворачиваем в другую сторону
   }
   100% {
-    transform: translate(0%, -45px) rotate(-2deg);
+    transform: translate(0%, -55px) rotate(-2deg);
   }
 }
 </style>
