@@ -30,8 +30,8 @@ import img7 from "../assets/book/7.jpg";
 import img8 from "../assets/book/8.jpg";
 import img9 from "../assets/book/9.jpg";
 
-import img12 from "../assets/book/12.jpg";
-import img13 from "../assets/book/13.jpg";
+import img10 from "../assets/book/10.jpg";
+import img11 from "../assets/book/11.jpg";
 
 import img18 from "../assets/book/18.png";
 
@@ -47,8 +47,8 @@ const pages = [
   img7,
   img8,
   img9,
-  img12,
-  img13,
+  img10,
+  img11,
   img18,
 ];
 </script>
