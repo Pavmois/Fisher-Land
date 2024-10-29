@@ -1,5 +1,5 @@
 <template>
-  <div class="wheel_wrapper">
+  <div v-if="isWidthPc" class="wheel_wrapper">
     <h1>Wheel Of Boosty</h1>
 
     <div class="input_loaders">
@@ -34,8 +34,8 @@
           <div class="item-details">
             <span class="author">{{ item.author }}</span>
             <span class="level-name">Тир: {{ item.level_name }}</span>
-            <span class="start-date">{{ item.start_date }}</span>
-            <span class="suggestion">{{ item.suggestion }}</span>
+            <span class="start-date">{{ formatDateWithMonths(item.start_date) }}</span>
+            <span class="suggestion">{{ cleanString(item.suggestion) }}</span>
           </div>
         </div>
       </div>
@@ -50,8 +50,8 @@
           <div class="item-details">
             <span class="author">{{ item.author }}</span>
             <span class="level-name">Тир: {{ item.level_name }}</span>
-            <span class="start-date">{{ item.start_date }}</span>
-            <span class="suggestion">{{ item.suggestion }}</span>
+            <span class="start-date">{{ formatDateWithMonths(item.start_date) }}</span>
+            <span class="suggestion">{{ cleanString(item.suggestion) }}</span>
           </div>
         </div>
       </div>
@@ -64,12 +64,16 @@
     </div>
 
     <WheelFortune v-if="wheelData.length" :sectors="wheelData" @wheelStop="wheelStoped"/>
-
+  </div>
+  <div v-else class="wheel-not">
+    <span>
+      Версия колеса для планшетов и мобильных устройств в разработке
+    </span>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import Papa from 'papaparse';
 //@ts-ignore
 import WheelFortune from '../components/WheelFortune.vue';
@@ -117,7 +121,34 @@ const parsedData = ref<any[] | null>(null); // Для хранения данн�
 const jsonData = ref<any | null>(null); // Для хранения данных из JSON файла
 const wheelData = ref<any[]>([]); // Для хранения результата сравнения
 const winners = ref<any[]>([]); // Для хранения результата сравнения
+const isWidthPc = ref(true); // Изначально предполагаем, что ширина экрана больше 1300p
 
+// Метод для очистки строки от специальных символов
+const cleanString = (str: string): string => {
+  // Удаляем пробелы в начале и конце строки, заменяем неразделимые пробелы на обычные и убираем спец.символы
+  const cleanedStr = str
+    .trim() // Убираем пробелы в начале и конце строки
+    .replace(/[\u00A0]/g, ' ') // Заменяем неразделимые пробелы на обычные пробелы
+    .replace(/[^\w\s]/gi, ''); // Удаляем все спец.символы
+  return cleanedStr; // Возвращаем очищенную строку
+}
+
+const checkWidth = () => {
+  isWidthPc.value = window.innerWidth >= 1300; // Меняем значение переменной в зависимости от ширины экрана
+}
+
+const formatDateWithMonths = (dateString: string): string => {
+  const date = new Date(dateString); // Создаем объект даты из строки
+  const currentDate = new Date(); // Текущая дата
+
+  // Получаем количество месяцев, прошедших с указанной даты
+  const monthsPassed = (currentDate.getFullYear() - date.getFullYear()) * 12 + (currentDate.getMonth() - date.getMonth());
+
+  // Форматируем дату в нужный формат
+  const formattedDate = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getFullYear()).slice(-2)}`;
+
+  return `${formattedDate} (${monthsPassed} мес.)`; // Возвращаем отформатированную строку
+}
 
 const handleFileChange = (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
@@ -216,9 +247,28 @@ const wheelStoped = (index: number) => {
   }, 500);
 
 }
+
+// Устанавливаем обработчик события при монтировании компонента
+onMounted(() => {
+  checkWidth(); // Проверяем ширину при инициализации
+  window.addEventListener('resize', checkWidth); // Добавляем обработчик события resize
+});
+
+// Удаляем обработчик события перед размонтированием компонента
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', checkWidth);
+});
 </script>
 
 <style lang="scss" scoped>
+.wheel-not {
+  display: flex;
+  min-height: 90vh;
+  span {
+    margin: auto;
+    font-size: 32px;
+  }
+}
 .wheel_wrapper {
   display: flex;
   flex-direction: column;
@@ -333,6 +383,7 @@ const wheelStoped = (index: number) => {
     .wheel-item {
       display: flex;
       align-items: center;
+      justify-content: space-around;
       width: 250px;
       padding: 10px;
       border: 1px solid #ccc;
@@ -340,8 +391,8 @@ const wheelStoped = (index: number) => {
       background-color: #3f4d45;
 
       .avatar {
-        width: 50px;
-        height: 50px;
+        width: 70px;
+        height: 70px;
         border-radius: 50%;
         margin-right: 10px;
       }
@@ -349,6 +400,20 @@ const wheelStoped = (index: number) => {
       .item-details {
         display: flex;
         flex-direction: column;
+        text-align: left;
+        gap: 5px;
+        height: 100%;
+        width: calc(100% - 80px);
+        .suggestion {
+          text-wrap: wrap;
+          color: blanchedalmond;
+        }
+        .level-name {
+          color: deepskyblue;
+        }
+        .start-date {
+          color: mediumaquamarine;
+        }
       }
 
       span {
