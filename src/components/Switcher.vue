@@ -3,6 +3,10 @@
     <button @click="bookOn" :class="{ active: activeBtn }">Memories</button>
     <button @click="bookOff" :class="{ active: !activeBtn }">Галерея</button>
   </div>
+  <div v-if="activeBtn" class="note">
+    Потяни за край, будто открываешь книгу<br/>
+    или щёлкни справа от картинки
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -36,10 +40,11 @@ const bookOff = () => {
     background: transparent;
     outline: none;
     border: 1px solid rgb(88, 88, 88);
-    height: 100%;
-    width: 45%;
+    height: 40px;
+    width: 47%;
     border-radius: 20px;
     color: white;
+    font-size: 16px;
     padding: 4px 0;
     cursor: pointer;
     transition: all 0.35s linear;
@@ -50,5 +55,8 @@ const bookOff = () => {
   .active {
     background: rgb(88, 88, 88);
   }
+}
+.note {
+  margin-bottom: 8px;
 }
 </style>
