@@ -205,42 +205,6 @@ const spinWheel = (duration) => {
   requestAnimationFrame(animate); // Запускаем анимацию
 };
 
-// const spinWheel = (duration) => {
-//   const startTime = performance.now();
-//   let speed = 0.1; // Начальная скорость вращения
-
-//   const animate = (currentTime) => {
-//     const elapsed = currentTime - startTime;
-
-//     if (elapsed < duration) {
-//       rotationAngle.value += speed; // Увеличиваем угол вращения
-//       speed *= 0.99; // Постепенно уменьшаем скорость
-//       drawWheel(); // Перерисовываем колесо
-//       requestAnimationFrame(animate); // Запрашиваем следующий кадр
-//     } else {
-//       // Плавная остановка
-//       const stopAnimation = (stopTime) => {
-//         if (speed > 0.01) {
-//           rotationAngle.value += speed; // Увеличиваем угол вращения
-//           speed *= 0.95; // Постепенно уменьшаем скорость
-//           drawWheel(); // Перерисовываем колесо
-//           requestAnimationFrame(stopAnimation); // Запрашиваем следующий кадр
-//         } else {
-//           speed = 0; // Устанавливаем скорость в 0
-//           drawWheel(); // Перерисовываем колесо в конечном состоянии
-//           const point = getTrianglePoint(canvasWidth, canvasHeight); // Получаем координаты точки
-//           const coordinates = getSectorCoordinates(rotationAngle.value);
-//           emit('wheelStop', findSectorByPointY(point.y, coordinates));
-          
-//         }
-//       };
-//       requestAnimationFrame(stopAnimation); // Запускаем анимацию остановки
-//     }
-//   };
-
-//   requestAnimationFrame(animate); // Запускаем анимацию
-// };
-
 const findSectorByPointY = (pointY, coordinates) => {  
   for (let i = 0; i < coordinates.length; i++) {
     const { startCoordinates, endCoordinates, sector } = coordinates[i];  

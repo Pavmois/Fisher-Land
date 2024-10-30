@@ -34,12 +34,24 @@
           <div class="item-details">
             <span class="author">{{ item.author }}</span>
             <span class="level-name">Тир: {{ item.level_name }}</span>
-            <span class="start-date">{{ formatDateWithMonths(item.start_date) }}</span>
+            <span v-if="item.start_date" class="start-date">{{ formatDateWithMonths(item.start_date) }}</span>
+            <span v-else class="start-date">Сегодня</span>
             <span class="suggestion">{{ cleanString(item.suggestion) }}</span>
           </div>
         </div>
       </div>
+      <div class="add-member">
+        <button class="open-btn" @click="showPopup = !showPopup">Добавить участников</button>
+        <div v-if="showPopup" class="popup">
+          <input v-model="author" placeholder="Ник" />
+          <input v-model.number="levelName" type="number" placeholder="Уровень 1-7" min="1" max="7"/>
+          <input v-model="suggestion" placeholder="Игра" />
+          <button @click="addItem">Добавить</button>
+        </div>
+      </div>
     </div>
+        
+
 
     <!-- Блок для отображения результата сравнения в виде списка -->
     <div v-if="winners.length" class="wheel-output">
@@ -50,7 +62,8 @@
           <div class="item-details">
             <span class="author">{{ item.author }}</span>
             <span class="level-name">Тир: {{ item.level_name }}</span>
-            <span class="start-date">{{ formatDateWithMonths(item.start_date) }}</span>
+            <span v-if="item.start_date" class="start-date">{{ formatDateWithMonths(item.start_date) }}</span>
+            <span v-else class="start-date">Сегодня</span>
             <span class="suggestion">{{ cleanString(item.suggestion) }}</span>
           </div>
         </div>
@@ -77,7 +90,8 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import Papa from 'papaparse';
 //@ts-ignore
 import WheelFortune from '../components/WheelFortune.vue';
-
+import member from "../assets/newMember.png";
+const showPopup = ref(false);
 type ParsedDataItem = {
   name: string;
   level_name: string;
@@ -122,6 +136,33 @@ const jsonData = ref<any | null>(null); // Для хранения данных 
 const wheelData = ref<any[]>([]); // Для хранения результата сравнения
 const winners = ref<any[]>([]); // Для хранения результата сравнения
 const isWidthPc = ref(true); // Изначально предполагаем, что ширина экрана больше 1300p
+const author = ref('');
+const levelName = ref('');
+const suggestion = ref('');
+
+const addItem = () => {
+  showPopup.value = !showPopup.value;
+  const newItem = {
+    author: author.value,
+    level_name: levelName.value,
+    suggestion: suggestion.value,
+    avatar: member,
+    id: wheelData.value.length, // Используем длину массива wheelData для id
+  };
+  
+  wheelData.value.push(newItem); // Добавляем новый объект в массив wheelData
+
+  // Пересобираем массив, выставляя новые id по порядку
+  wheelData.value = wheelData.value.map((item, newIndex) => ({
+    ...item,
+    id: newIndex // Присваиваем новые id по порядку, начиная с 0
+  }));
+
+  // Очищаем поля ввода после добавления
+  author.value = '';
+  levelName.value = '';
+  suggestion.value = '';
+};
 
 // Метод для очистки строки от специальных символов
 const cleanString = (str: string): string => {
@@ -261,6 +302,33 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
+.add-member {
+  display: flex;
+  gap: 32px;
+  margin-top: 8px;
+  .open-btn {
+    cursor: pointer;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #3f4d45;
+    color: white;
+    transition: all 0.2s linear;
+      &:hover {
+        opacity: 0.7;
+      }
+  }
+  .popup {
+    display: flex;
+    gap: 8px;
+    input {
+      width: 120px;
+    }
+    button {
+      cursor: pointer;
+    }
+  }
+}
 .wheel-not {
   display: flex;
   min-height: 90vh;
@@ -360,11 +428,16 @@ onBeforeUnmount(() => {
     align-items: start;
     margin-top: 8px;
     .copyBtn {
+      cursor: pointer;
       padding: 5px;
       border: 1px solid #ccc;
       border-radius: 5px;
       background-color: #3f4d45;
       color: white;
+      transition: all 0.2s linear;
+      &:hover {
+        opacity: 0.7;
+      }
     }
   }
   .wheel-output {
