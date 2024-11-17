@@ -278,6 +278,14 @@ const wheelStoped = (index: number) => {
   
       // Удаляем объект по индексу
       wheelData.value.splice(index, 1);
+
+      // Определяем переменную allWinners
+      const allWinners = wheelData.value.filter(item => item.suggestion.toLowerCase() === winner.suggestion.toLowerCase());
+
+      // Если allWinners не пустой, удаляем все его объекты из wheelData.value
+      if (allWinners.length > 0) {
+        wheelData.value = wheelData.value.filter(item => !allWinners.includes(item));
+      }
     
     // Пересобираем массив, выставляя новые id по порядку
     wheelData.value = wheelData.value.map((item, newIndex) => ({
