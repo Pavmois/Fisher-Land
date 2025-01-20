@@ -30,6 +30,7 @@
       <h2>Участники</h2>
       <div class="wheel-list">
         <div v-for="(item, index) in wheelData" :key="index" class="wheel-item">
+          <div class="gen-item" @click="getInfo(index)" title="Удалить"></div>
           <img :src="item.avatar" alt="Avatar" class="avatar" />
           <div class="item-details">
             <span class="author">{{ item.author }}</span>
@@ -51,9 +52,7 @@
       </div>
     </div>
         
-
-
-    <!-- Блок для отображения результата сравнения в виде списка -->
+    <!-- Блок для отображения списка победителей -->
     <div v-if="winners.length" class="wheel-output">
       <h2>Победители</h2>
       <div class="wheel-list">
@@ -297,6 +296,17 @@ const wheelStoped = (index: number) => {
 
 }
 
+const getInfo = (index: number) => {
+  // Удаляем объект по индексу
+  wheelData.value.splice(index, 1);
+
+  // Пересобираем массив, выставляя новые id по порядку
+  wheelData.value = wheelData.value.map((item, newIndex) => ({
+  ...item,
+  id: newIndex // Присваиваем новые id по порядку, начиная с 0
+}));
+}
+
 // Устанавливаем обработчик события при монтировании компонента
 onMounted(() => {
   checkWidth(); // Проверяем ширину при инициализации
@@ -461,7 +471,25 @@ onBeforeUnmount(() => {
       gap: 8px; /* Отступ между элементами */
     }
 
+    .gen-item {
+      position: absolute;
+      top: 5%;
+      right: 5%;
+      width: 25px;
+      height: 25px;
+      background-image: url('/src/assets/trash.png');
+      background-repeat: no-repeat;
+      background-size: cover;
+      transition: all 0.2s;
+      opacity: 0;
+      border-radius: 20px;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
     .wheel-item {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: space-around;
@@ -470,6 +498,12 @@ onBeforeUnmount(() => {
       border: 1px solid #ccc;
       border-radius: 5px;
       background-color: #3f4d45;
+
+      &:hover {
+        .gen-item {
+          opacity: 1;
+        }
+      }
 
       .avatar {
         width: 70px;
