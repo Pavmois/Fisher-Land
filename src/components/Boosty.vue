@@ -36,35 +36,27 @@ h1 {
   place-items: center;
   position: relative;
   .back-border {
-    background-image: url('/src/assets/tablet.png');
+    background-image: url('/src/assets/monik.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
-    width: 100%;
+    width: 560px;
     height: 475px;
-    filter: invert(1);
   }
   .video {
     position: absolute;
-    top: 50%;
-    transform: translate(0, -50%);
-    width: 90%;
+    top: 48%;
+    transform: translate(0, -76%);
+    width: 500px;
     height: auto;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
   }
 }
 
-@media screen and (min-width: 1900px) {
-  .stream {
-    .video {
-      left: 50%;
-      transform: translate(-49.6%, -50%);
-      width: 100%;
-      height: 400px;
-    }
-  }
-}
-
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1500px) {
   .boosty {
     flex-direction: column;
   }
@@ -75,37 +67,19 @@ h1 {
   }
 }
 
-@media screen and (max-width: 1000px) {
-  .stream {
-    .back-border {
-      height: 565px;
-    }
-  }
-}
 
 @media screen and (max-width: 900px) {
-  .stream {
-    .back-border {
-      height: 475px;
-    }
-  }
-}
-@media screen and (max-width: 800px) {
-  .video-block {
-    width: 90%;
-  }
-  .stream {
-    .back-border {
-      height: 475px;
-    }
-  }
-}
-@media screen and (max-width: 600px) {
   .video-block {
     width: 100%;
   }
+}
+@media screen and (max-width: 600px) {
   .stream {
+    .video {
+      width: 380px;
+    }
     .back-border {
+      width: 90%;
       height: 365px;
     }
   }
@@ -115,6 +89,9 @@ h1 {
     margin-top: 20px;
   }
   .stream {
+    .video {
+      width: 330px;
+    }
     .back-border {
       height: 315px;
     }
@@ -122,6 +99,9 @@ h1 {
 }
 @media screen and (max-width: 425px) {
   .stream {
+    .video {
+      width: 280px;
+    }
     .back-border {
       height: 265px;
     }
