@@ -25,6 +25,15 @@
       Получить таблицу участников
     </button>
 
+    <div v-if="noDataComments.length" class="noDataComments">
+      Комментарий на бусти есть, а подписки - нет!
+      <ul>
+        <li v-for="(item, index) in noDataComments" :key="index">
+          <span>{{ item.author }}</span> заказал <span> {{ item.suggestion }}</span>
+        </li>
+      </ul>
+    </div>
+
     <!-- Блок для отображения результата сравнения в виде списка -->
     <div v-if="wheelData.length > 0" class="wheel-output">
       <h2>Участники</h2>
@@ -74,7 +83,7 @@
         </button>
       </div>
     </div>
-
+    
     <WheelFortune v-if="wheelData.length" :sectors="wheelData" @wheelStop="wheelStoped"/>
   </div>
   <div v-else class="wheel-not">
@@ -134,6 +143,7 @@ const parsedData = ref<any[] | null>(null); // Для хранения данн�
 const jsonData = ref<any | null>(null); // Для хранения данных из JSON файла
 const wheelData = ref<any[]>([]); // Для хранения результата сравнения
 const winners = ref<any[]>([]); // Для хранения результата сравнения
+const noDataComments = ref<any[]>([]); // Для хранения комментариев без совпадений
 const isWidthPc = ref(true); // Изначально предполагаем, что ширина экрана больше 1300p
 const author = ref('');
 const levelName = ref('');
@@ -240,6 +250,20 @@ async function getSuggestionsString(winners: any) {
   return suggestionsString;
 }
 
+// Функция для сравнения данных и формирования NoDataComments
+const compareDataAndFindMissing = (jsonArr: any[], wheelArr: any[]) => {
+  // Получаем все авторы из wheelData для быстрого поиска
+  const wheelAuthors = new Set(wheelArr.map(item => item.author));
+  
+  // Находим объекты из jsonData, которых нет в wheelData
+  const missingComments = jsonArr.filter(jsonItem => !wheelAuthors.has(jsonItem.author));
+  
+  // Сохраняем результат в noDataComments
+  noDataComments.value = missingComments;
+  
+  return missingComments;
+};
+
 // Функция для сравнения данных
 const compareData = () => {
   wheelData.value = []; // Сбрасываем предыдущие данные
@@ -262,6 +286,9 @@ const compareData = () => {
         }
       });
     });
+
+     // Вызываем функцию для поиска несовпадающих комментариев
+     const missingComments = compareDataAndFindMissing(jsonData.value, wheelData.value);
   }
 };
 
@@ -536,6 +563,16 @@ onBeforeUnmount(() => {
         margin-right: 10px;
       }
     }
+  }
+}
+.noDataComments {
+  width: 1200px;
+  text-align: left;
+  padding: 10px;
+  margin: auto;
+  margin-top: 16px;
+  span {
+    color: blanchedalmond;
   }
 }
 </style>
