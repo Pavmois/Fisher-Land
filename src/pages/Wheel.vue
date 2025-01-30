@@ -287,8 +287,7 @@ const compareData = () => {
       });
     });
 
-     // Вызываем функцию для поиска несовпадающих комментариев
-     const missingComments = compareDataAndFindMissing(jsonData.value, wheelData.value);
+    compareDataAndFindMissing(jsonData.value, wheelData.value);
   }
 };
 
