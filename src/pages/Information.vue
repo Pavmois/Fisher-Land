@@ -1,12 +1,11 @@
 <template>
   <div class="info-wrapper">
-    <h1>Information</h1>
+    <Divider :text="'Алерты'"/>
+    <p>
+      Больше никакой лотереи!
+      Ниже представлен полный набор <span>звуковых оповещений</span> на разные <span>суммы доната</span>.
+    </p>
     <div class="donations">
-      <p>Если хотите меня поддержать, то больше не надо играть в лотерею!
-        Ниже представлен полный набор донейшн алертов.
-      </p>
-      <p>Цифры названия - сумма доната.</p>
-      <p>Нажми чтобы услышать!</p>
       <div class="donates-wrapper">
         <div
           class="donate"
@@ -19,11 +18,17 @@
         </div> 
       </div>
     </div>
+    <p><span>Нажми</span> чтобы услышать!</p>
+    
+    <Divider :text="'Сборка'"/>
+    <Composables/>    
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import Composables from '../components/info/Composables.vue'
+import Divider from '../components/Divider.vue'
 import thirty from '../assets/alerts/30.mp3'
 import fifty from '../assets/alerts/50.mp3'
 import fiftyone from '../assets/alerts/51.mp3'
@@ -209,28 +214,30 @@ function stopAll() {
 </script>
 
 <style lang="scss" scoped>
-h1 {
-  margin-top: 35px;
+.divider {
+  margin-top: 0;
 }
-
 .info-wrapper {
   display: flex;
   flex-direction: column;
   min-height: 90vh;
 }
 
-.donations {
-  max-width: 665px;
-  margin: 25px auto;
-  p {
-    text-align: start;
+p {
+  span {
+    color: rgb(241, 181, 14);
   }
+}
+
+.donations {
+  max-width: 865px;
+  margin: 0 auto;
 }
 
 .donates-wrapper {
   display: flex;
   flex-wrap: wrap;
-  justify-content: baseline;
+  justify-content: space-around;  
   gap: 8px;
   .donate {
     display: flex;
@@ -239,7 +246,7 @@ h1 {
     padding: 8px 10px;
     background: rgba(255, 255, 255, 0.4);
     border-radius: 20px;
-    transition: all 0.2s linear;
+    transition: all 0.15s linear;
     -webkit-tap-highlight-color: transparent;
     border: 1px solid transparent;
     cursor: pointer;
@@ -254,12 +261,27 @@ h1 {
     }
   }
   @media screen and (max-width: 700px) {
-    max-width: 90%;
+    max-width: 100%;
     justify-content: center;
+    .donate {
+      width: 140px;
+    }
+  }
+  @media screen and (max-width: 545px) {
     .donate {
       width: 120px;
     }
   }
+  @media screen and (max-width: 480px) {
+    justify-content: space-evenly;
+    .donate {
+      width: 140px;
+    }
+  }
+  @media screen and (max-width:380px) {
+    .donate {
+      width: 110px;
+    }
+  }
 }
-
 </style>
