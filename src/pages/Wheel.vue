@@ -387,7 +387,7 @@ onBeforeUnmount(() => {
   min-height: 90vh;
   
   h1 {
-    margin-top: 16px;
+    margin-top: 35px;
   }
 
   .input_loaders {

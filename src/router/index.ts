@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
-// import bridge from '@vkontakte/vk-bridge';
+import bridge from '@vkontakte/vk-bridge';
 
 // Отправляет событие инициализации нативному клиенту
-// bridge.send("VKWebAppInit");
+bridge.send("VKWebAppInit");
 
 
 const routes = [
@@ -14,6 +14,10 @@ const routes = [
   {
     path: '/wheel',
     component: () => import('../pages/Wheel.vue')
+  },
+  {
+    path: '/info',
+    component: () => import('../pages/Information.vue')
   },
 ]
 

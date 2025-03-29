@@ -1,14 +1,11 @@
 <template>
   <div class="menu">
     <div class="menu-wrapper">
-      <button @click="showIcons = !showIcons" class="round-button">Menu</button>
+      <button @click="updateCurrentIcons" class="round-button">Menu</button>
       <transition name="fade">
         <div v-if="showIcons" class="icon-container" @click="showIcons = !showIcons">
-          <router-link to="/" class="icon">
-            <img src="/src/assets/home.png" alt="Home" />
-          </router-link>
-          <router-link to="/wheel" class="icon wheel">
-            <img src="/src/assets/wheel.png" alt="Wheel" />
+          <router-link v-for="(icon, index) in currentIcons" :key="index" :to="icon.to" class="icon" :class="icon.class">
+            <img :src="icon.src" :alt="icon.alt" />
           </router-link>
         </div>
       </transition>
@@ -17,9 +14,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const showIcons = ref(false);
+
+const icons = [
+  { to: '/', src: '/src/assets/home.png', alt: 'Home', class: '' },
+  { to: '/wheel', src: '/src/assets/wheel.png', alt: 'Wheel', class: 'wheel' },
+  { to: '/info', src: '/src/assets/home.png', alt: 'Information', class: '' }
+];
+
+const currentIcons = ref(icons.filter(icon => icon.to !== window.location.pathname));
+
+const updateCurrentIcons = () => {
+  showIcons.value = !showIcons.value
+  currentIcons.value = icons.filter(icon => icon.to !== window.location.pathname);
+};
+
+watch(() => window.location.pathname, updateCurrentIcons);
 </script>
 
 <style lang="scss" scoped>
