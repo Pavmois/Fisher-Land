@@ -61,7 +61,7 @@ watch(() => window.location.pathname, updateCurrentIcons);
   z-index: 999;
   transition: 0.1s all linear;
   color: white;
-  border-bottom-left-radius: 50px;
+  border-bottom-left-radius: 20px;
   transform: translateX(80px);
   animation: slideClose 0.4s forwards;
 
@@ -77,6 +77,8 @@ watch(() => window.location.pathname, updateCurrentIcons);
     border: none;
     border-bottom-left-radius: 20px;
     background: rgba(255, 255, 255, 0.4);
+    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(7px);
     -webkit-tap-highlight-color: transparent;
     color: white;
     font-weight: 800;
@@ -95,6 +97,8 @@ watch(() => window.location.pathname, updateCurrentIcons);
     width: 80px;
     border-bottom-left-radius: 20px;
     background: rgba(255, 255, 255, 0.7);
+    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(7px);
   }
 }
 

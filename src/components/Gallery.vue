@@ -50,6 +50,8 @@
   import img13 from "../assets/cosplay/13.jpg";
   import img14 from "../assets/cosplay/14.jpg";
   import img15 from "../assets/cosplay/15.jpg";
+  import img16 from "../assets/cosplay/16.jpg";
+  import img17 from "../assets/cosplay/17.jpg";
 
   const modules = [EffectCoverflow, Pagination];
 
@@ -70,6 +72,8 @@
     img13,
     img14,
     img15,
+    img16,
+    img17,
   ];
 </script>
 

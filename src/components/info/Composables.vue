@@ -65,7 +65,7 @@ const composition = [
   flex-wrap: wrap;
   gap: 18px;
   max-width: 800px;
-  margin: 25px auto;
+  margin: 8px auto;
   padding: 0 20px;
   .composable {
     display: flex;
@@ -86,7 +86,6 @@ const composition = [
   }
   @media screen and (max-width: 800px) {
     justify-content: space-evenly;
-    // justify-content: space-between;
     .composable {
       img {
         width: 80px;
