@@ -20,6 +20,9 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import home from "../assets/home.svg";
+import wheel from "../assets/wheel.png";
+import info from "../assets/info.svg";
 
 const isOpen = ref(false);
 const buttonText = ref('Menu');
@@ -37,9 +40,9 @@ const changeState = () => {
 }
 
 const icons = [
-  { to: '/', src: '/src/assets/home.svg', alt: 'Главная', class: '' },
-  { to: '/wheel', src: '/src/assets/wheel.png', alt: 'Колесо Бусти', class: 'wheel' },
-  { to: '/info', src: '/src/assets/info.svg', alt: 'Информация', class: '' }
+  { to: '/', src: home, alt: 'Главная', class: '' },
+  { to: '/wheel', src: wheel, alt: 'Колесо Бусти', class: 'wheel' },
+  { to: '/info', src: info, alt: 'Информация', class: '' }
 ];
 
 const currentIcons = ref(icons.filter(icon => icon.to !== window.location.pathname));
