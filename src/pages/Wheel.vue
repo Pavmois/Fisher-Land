@@ -1,4 +1,4 @@
-<template>
+<template>  
   <div v-if="isWidthPc" class="wheel_wrapper">
     <h1>Wheel Of Boosty</h1>
 
@@ -91,15 +91,31 @@
       Версия колеса для планшетов и мобильных устройств в разработке
     </span>
   </div>
+  <Teleport to="body">
+    <!-- используйте модальный компонент, передайте входной параметр -->
+    <modal :show="showModal" @close="showModal = false">
+      <template #avatar>
+        <img class="dawd" :src="avatarModal">
+      </template>
+      <template #body>
+        <h3>{{ authorModal }}</h3>
+      </template>
+      <template #footer>
+        {{ suggestionModal }}
+      </template>
+    </modal>
+  </Teleport>
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import Modal from '../components/Modal.vue';
 import Papa from 'papaparse';
 //@ts-ignore
 import WheelFortune from '../components/WheelFortune.vue';
 import member from "../assets/newMember.png";
 const showPopup = ref(false);
+const showModal = ref(false);
 type ParsedDataItem = {
   name: string;
   level_name: string;
@@ -148,6 +164,9 @@ const isWidthPc = ref(true); // Изначально предполагаем, �
 const author = ref('');
 const levelName = ref('');
 const suggestion = ref('');
+const suggestionModal = ref('');
+const authorModal = ref('');
+const avatarModal = ref('');
 
 const addItem = () => {
   showPopup.value = !showPopup.value;
@@ -300,6 +319,12 @@ const wheelStoped = (index: number) => {
   
       // Добавляем объект в массив winners
       winners.value.push(winner);
+
+      authorModal.value = winner.author;
+      avatarModal.value = winner.avatar;
+      suggestionModal.value = winner.suggestion;
+      showModal.value = true;
+      
   
       // Удаляем объект по индексу
       wheelData.value.splice(index, 1);
@@ -346,6 +371,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
+.dawd {
+  height: 100px;
+  border-radius: 50%;
+}
 .add-member {
   display: flex;
   gap: 32px;

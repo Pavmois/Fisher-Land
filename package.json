@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@neoconfetti/vue": "^2.2.1",
     "@vkontakte/vk-bridge": "^2.15.1",
     "flipbook-vue": "^1.0.0-beta.4",
     "papaparse": "^5.4.1",
