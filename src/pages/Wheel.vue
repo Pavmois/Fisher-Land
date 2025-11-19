@@ -114,8 +114,12 @@ import Papa from 'papaparse';
 //@ts-ignore
 import WheelFortune from '../components/WheelFortune.vue';
 import member from "../assets/newMember.png";
+import { useSnackbar } from "vue3-snackbar";
 const showPopup = ref(false);
 const showModal = ref(false);
+const snackbar = useSnackbar();
+
+
 type ParsedDataItem = {
   name: string;
   level_name: string;
@@ -261,9 +265,15 @@ async function getSuggestionsString(winners: any) {
   // Копируем строку в буфер обмена
   try {
     await navigator.clipboard.writeText(suggestionsString);
-    alert('Скопировано в буфер обмена:' + suggestionsString);
+    snackbar.add({
+        type: 'success',
+        text: suggestionsString
+    })
   } catch (err) {
-    alert('Ошибка при копировании в буфер обмена:' + err);
+    snackbar.add({
+        type: 'error',
+        text: 'Ошибка при копировании в буфер обмена:' + err
+    })
   }
 
   return suggestionsString;

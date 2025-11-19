@@ -1,6 +1,6 @@
 <template>
   <Transition name="modal">
-    <div v-if="show" class="modal-mask">
+    <div v-if="props.show" class="modal-mask">
       <div class="modal-container">
         <div class="confetki">
           <div v-confetti="{ particleCount: 150, force: 0.35, stageWidth: 2100 }" />
