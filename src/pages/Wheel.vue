@@ -6,7 +6,7 @@
       <!-- Инпут для загрузки CSV файла -->
       <label :class="parsedData ? 'active' : 'inactive'">
         <span v-if="!parsedData">
-          Выберите CSV файл
+          Выгрузка Boosty (CSV)
         </span>
         <input type="file" accept=".csv" @change="handleFileChange" />
       </label>
@@ -14,7 +14,7 @@
       <!-- Инпут для загрузки JSON файла -->
       <label  :class="jsonData ? 'active' : 'inactive'">
         <span v-if="!jsonData">
-          Выберите JSON файл
+          Комментарии подписчиков (JSON)
         </span>
         <input type="file" accept=".json" @change="handleJsonFileChange" />
       </label>
@@ -28,8 +28,8 @@
     <div v-if="noDataComments.length" class="noDataComments">
       Комментарий на бусти есть, а подписки - нет!
       <ul>
-        <li v-for="(item, index) in noDataComments" :key="index">
-          <span>{{ item.author }}</span> заказал <span> {{ item.suggestion }}</span>
+        <li v-for="(item, index) in noDataComments" :key="index" :class="{ added: isAuthorInWheel(item.author) }">
+          <span @dblclick="fillAuthor(item.author)">{{ item.author }}</span> заказал <span @dblclick="fillSuggestion(item.suggestion)"> {{ item.suggestion }}</span>
         </li>
       </ul>
     </div>
@@ -54,7 +54,12 @@
         <button class="open-btn" @click="showPopup = !showPopup">Добавить участников</button>
         <div v-if="showPopup" class="popup">
           <input v-model="author" placeholder="Ник" />
-          <input v-model.number="levelName" type="number" placeholder="Уровень 1-7" min="1" max="7"/>
+          <select v-model.number="levelName">
+          <option disabled value="">Выберите уровень</option>
+          <option v-for="tier in subTiers" :key="tier.tier" :value="tier.tier">
+            {{ tier.name }} - {{ tier.tier }}
+          </option>
+        </select>
           <input v-model="suggestion" placeholder="Игра" />
           <button @click="addItem">Добавить</button>
         </div>
@@ -108,7 +113,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import Modal from '../components/Modal.vue';
 import Papa from 'papaparse';
 //@ts-ignore
@@ -134,27 +139,31 @@ type JsonDataItem = {
 
 const subTiers = [
   {
-    name: 'Ведьхряк',
+    name: 'Рудокоп',
     tier: 1,
   },
   {
-    name: 'Ассасвин',
+    name: 'Кузнец',
     tier: 2,
   },
   {
-    name: 'Безумный Хрякс',
+    name: 'Разбойник',
     tier: 3,
   },
   {
-    name: 'Свин-паук',
+    name: 'Воин',
     tier: 4,
   },
   {
-    name: 'Порк',
+    name: 'Паладин',
+    tier: 5,
+  },
+  {
+    name: 'Чародей',
     tier: 6,
   },
   {
-    name: 'Космосвинятник',
+    name: 'Правитель',
     tier: 7,
   },
 ]
@@ -194,6 +203,30 @@ const addItem = () => {
   author.value = '';
   levelName.value = '';
   suggestion.value = '';
+};
+
+// набор авторов из wheelData для быстрого поиска
+const wheelAuthorsSet = computed(() => new Set(wheelData.value.map(i => i.author)));
+
+// вспомогательная функция для шаблона
+const isAuthorInWheel = (authorName: string) => {
+  return wheelAuthorsSet.value.has(authorName);
+};
+
+// Функция для заполнения инпута с автором при двойном клике
+const fillAuthor = (value: string) => {
+  showPopup.value = true; // Открываем popup для добавления
+  setTimeout(() => {
+    author.value = value;
+  }, 300);
+};
+
+// Функция для заполнения инпута с игрой при двойном клике
+const fillSuggestion = (value: string) => {
+  showPopup.value = true; // Открываем popup для добавления
+  setTimeout(() => {
+    suggestion.value = value;
+  }, 300);
 };
 
 // Метод для очистки строки от специальных символов
@@ -610,7 +643,17 @@ onBeforeUnmount(() => {
   margin: auto;
   margin-top: 16px;
   span {
+    cursor: pointer;
     color: blanchedalmond;
+    transition: all 0.2s linear;
+    &:hover {
+      color: rgb(9, 255, 0);
+    }
+  }
+  li.added {
+    text-decoration: line-through;
+    opacity: 0.5;
+    pointer-events: none;
   }
 }
 </style>
